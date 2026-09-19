@@ -12,7 +12,12 @@ import java.util.Locale;
 
 final class XPRCommand implements TabExecutor {
 
+<<<<<<< HEAD
     private static final List<String> PLAYER_SUBS = List.of("status", "aturan", "preview");
+=======
+    private static final List<String> PLAYER_SUBS = List.of("status", "join", "leave", "aturan", "preview", "help");
+    private static final List<String> SPEC_HINTS = List.of("forever", "30m", "1h", "1d", "3r", "5r");
+>>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
     private static final List<String> ADMIN_SUBS = List.of("reload", "force", "reset");
 
     private final XPRoulette plugin;
@@ -37,7 +42,26 @@ final class XPRCommand implements TabExecutor {
                 }
                 manager.sendStatus(p);
             }
+<<<<<<< HEAD
             case "aturan", "rules", "help" -> manager.sendRules(sender);
+=======
+            case "aturan", "rules" -> manager.sendRules(sender);
+            case "help", "bantuan", "?" -> manager.sendHelp(sender);
+            case "join", "ikut", "leave", "keluar" -> {
+                if (!(sender instanceof Player p)) {
+                    sender.sendMessage(msg.get("cmd.players-only"));
+                    return true;
+                }
+                boolean on = sub.equals("join") || sub.equals("ikut");
+                ParticipationSpec spec = manager.parseSpec(args, 1);
+                if (spec == null) {
+                    sender.sendMessage(msg.get("cmd.invalid-duration",
+                            "max_days", manager.maxDays(), "max_rounds", manager.maxRounds()));
+                    return true;
+                }
+                manager.setParticipation(p, on, spec);
+            }
+>>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
             case "preview" -> {
                 Integer level = null;
                 if (args.length >= 2) {
@@ -61,8 +85,16 @@ final class XPRCommand implements TabExecutor {
                 if (!admin(sender)) return true;
                 Player target = target(sender, args);
                 if (target == null) return true;
+<<<<<<< HEAD
                 manager.forceActivate(target);
                 sender.sendMessage(msg.get("cmd.forced", "player", target.getName()));
+=======
+                if (manager.forceActivate(target)) {
+                    sender.sendMessage(msg.get("cmd.forced", "player", target.getName()));
+                } else {
+                    sender.sendMessage(msg.get("cmd.force-not-participating", "player", target.getName()));
+                }
+>>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
             }
             case "reset" -> {
                 if (!admin(sender)) return true;
@@ -111,6 +143,15 @@ final class XPRCommand implements TabExecutor {
             for (String s : all) {
                 if (s.startsWith(prefix)) out.add(s);
             }
+<<<<<<< HEAD
+=======
+        } else if (args.length == 2 && (args[0].equalsIgnoreCase("join") || args[0].equalsIgnoreCase("leave")
+                || args[0].equalsIgnoreCase("ikut") || args[0].equalsIgnoreCase("keluar"))) {
+            String prefix = args[1].toLowerCase(Locale.ROOT);
+            for (String s : SPEC_HINTS) {
+                if (s.startsWith(prefix)) out.add(s);
+            }
+>>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
         } else if (args.length == 2 && sender.hasPermission("xproulette.admin")
                 && (args[0].equalsIgnoreCase("force") || args[0].equalsIgnoreCase("reset"))) {
             String prefix = args[1].toLowerCase(Locale.ROOT);

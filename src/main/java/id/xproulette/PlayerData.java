@@ -6,6 +6,12 @@ import java.util.List;
 /** Status Roulette milik satu pemain. */
 final class PlayerData {
 
+<<<<<<< HEAD
+=======
+    /** Jenis pengaturan sementara (override) partisipasi. */
+    enum Temp {NONE, TIME, ROUNDS}
+
+>>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
     /** Detik yang sudah berjalan di siklus saat ini (hanya bertambah saat online). */
     int cycleElapsed;
 
@@ -24,6 +30,34 @@ final class PlayerData {
     /** Efek yang sedang aktif. */
     List<RolledEffect> effects = new ArrayList<>();
 
+<<<<<<< HEAD
+=======
+    // ---------------------------------------------------------------- partisipasi
+
+    /** Pengaturan permanen: true = ikut, false = tidak ikut. */
+    boolean optIn = true;
+
+    /** Pengaturan sementara. Jika bukan NONE, ini menimpa optIn sampai habis. */
+    Temp tempType = Temp.NONE;
+
+    /** Nilai pengaturan sementara: true = ikut sementara, false = keluar sementara. */
+    boolean tempOn;
+
+    /** (TIME) waktu berakhir, epoch millis. */
+    long tempUntil;
+
+    /** (ROUNDS) sisa putaran roda. */
+    int tempRounds;
+
+    /** Cache (tidak disimpan): apakah saat ini pemain benar-benar ikut. */
+    boolean participating = true;
+
+    /** Status ikut/tidak yang berlaku sekarang, dengan memperhitungkan pengaturan sementara. */
+    boolean effective() {
+        return tempType != Temp.NONE ? tempOn : optIn;
+    }
+
+>>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
     boolean hasRisk() {
         for (RolledEffect e : effects) {
             if (e.risk()) return true;

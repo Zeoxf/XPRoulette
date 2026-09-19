@@ -8,11 +8,19 @@ commands:
   xproulette:
     description: Perintah utama XP Roulette
     aliases: [xpr, roulette]
+<<<<<<< HEAD
     usage: /<command> [status|aturan|preview|reload|force|reset]
 
 permissions:
   xproulette.use:
     description: Boleh memakai perintah dasar (status, aturan, preview)
+=======
+    usage: /<command> [status|join|leave|aturan|preview|help|reload|force|reset]
+
+permissions:
+  xproulette.use:
+    description: Boleh memakai perintah dasar (status, join, leave, aturan, preview, help)
+>>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
     default: true
   xproulette.admin:
     description: Boleh memakai perintah admin (reload, force, reset)
