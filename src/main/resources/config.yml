@@ -13,8 +13,6 @@ cycle:
   # Pemain baru: roda pertama berputar setelah sekian detik sejak pertama kali join.
   first-join-delay-seconds: 60
 
-<<<<<<< HEAD
-=======
 # ---------- PARTISIPASI (IKUT / TIDAK IKUT) ----------
 # Pemain bisa memilih sendiri lewat /xpr join dan /xpr leave.
 participation:
@@ -27,7 +25,6 @@ participation:
   max-duration-days: 365
   max-rounds: 1000
 
->>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
 # ---------- PENGALI (BERDASARKAN LEVEL XP) ----------
 scaling:
   # Setiap naik sekian level = naik 1 tier.

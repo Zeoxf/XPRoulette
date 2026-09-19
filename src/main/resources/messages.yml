@@ -13,16 +13,11 @@ join:
     - "<gradient:#ffd700:#ff8c00><bold>━━━ SELAMAT DATANG DI XP ROULETTE ━━━</bold></gradient>"
     - "<gray>Tiap <yellow>{interval}</yellow>, roda takdir memberimu <gold>efek acak</gold> selama <green>{active}</green>."
     - "<gray>Makin tinggi <green>level XP</green>-mu, makin dahsyat efeknya... <red>tapi risikonya juga!</red>"
-<<<<<<< HEAD
-    - "<gray>Ketik <yellow>/xpr aturan</yellow> untuk membaca aturan main lengkap."
-    - ""
-=======
     - "<gray>Ketik <yellow>/xpr aturan</yellow> untuk aturan main, <yellow>/xpr help</yellow> untuk semua perintah."
     - "<gray>Kamu bebas <green>ikut</green> atau <red>keluar</red> kapan saja: <yellow>/xpr join</yellow> / <yellow>/xpr leave</yellow>."
     - ""
   first-optin-hint: "{prefix} <yellow>Kamu belum ikut Roulette.</yellow> <gray>Ketik <green>/xpr join</green> kalau berani mencoba!"
   back-off: "{prefix} <gray>Kamu sedang <red>tidak ikut</red> Roulette. Ketik <green>/xpr join</green> untuk ikut."
->>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
   back-active: "{prefix} <green>Selamat datang kembali! Roulette-mu masih aktif <yellow>{time}</yellow> lagi."
   back-cooldown: "{prefix} <gray>Roulette berikutnya aktif dalam <yellow>{time}</yellow>. Kumpulkan XP dulu!"
   back-dead: "{prefix} <red>Roulette-mu hangus karena mati.</red> <gray>Aktif lagi dalam <yellow>{time}</yellow>."
@@ -167,8 +162,6 @@ status:
   good-line: "  <green>✔ {effect}"
   risk-line: "  <red>✘ {effect}"
   next: "<gray>Naik <green>{levels}</green> level lagi untuk pengali <gold>x{multiplier}</gold>!"
-<<<<<<< HEAD
-=======
   help-hint: "<dark_gray>Ketik /xpr help untuk semua perintah."
   part:
     on-forever: "<gray>Partisipasi: <green>IKUT</green> <dark_gray>(permanen)</dark_gray>"
@@ -179,7 +172,6 @@ status:
     on-rounds-last: "<gray>Partisipasi: <green>IKUT sementara</green> <dark_gray>— berhenti di putaran berikutnya</dark_gray>"
     off-rounds: "<gray>Partisipasi: <red>LIBUR sementara</red> <dark_gray>— lewati</dark_gray> <yellow>{rounds} round</yellow> <dark_gray>lagi</dark_gray>"
     off-rounds-last: "<gray>Partisipasi: <red>LIBUR sementara</red> <dark_gray>— ikut lagi di putaran berikutnya</dark_gray>"
->>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
 
 # ---------- /xpr preview ----------
 preview:
@@ -197,19 +189,12 @@ rules:
     - "<yellow>5.</yellow> <gray>Jika kamu <red>MATI</red> saat efek aktif, efek <red>hangus</red> dan tidak diberikan lagi. Sisa siklus jadi <yellow>cooldown</yellow>."
     - "<yellow>6.</yellow> <gray>Setelah efek habis ada <yellow>{cooldown}</yellow> cooldown sebelum putaran berikutnya. Waktu hanya berjalan saat kamu <white>online</white>."
     - "<yellow>7.</yellow> <gray>Susu dan totem <red>tidak bisa</red> menghapus efek Roulette. Roda takdir tidak bisa dicurangi!"
-<<<<<<< HEAD
-=======
     - "<yellow>8.</yellow> <gray>Ikut itu <white>pilihan</white>! Kamu bisa ikut/keluar <white>selamanya</white>, atau <white>sementara</white> (per durasi atau per round). Lihat <yellow>/xpr help</yellow>."
->>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
     - "<gray>Perintah: <yellow>/xpr status</yellow> <dark_gray>•</dark_gray> <yellow>/xpr aturan</yellow> <dark_gray>•</dark_gray> <yellow>/xpr preview [level]</yellow>"
 
 # ---------- PERINTAH ----------
 cmd:
-<<<<<<< HEAD
-  usage: "{prefix} <gray>Gunakan: <yellow>/xpr [status|aturan|preview]</yellow>"
-=======
   usage: "{prefix} <gray>Gunakan: <yellow>/xpr [status|join|leave|aturan|preview|help]</yellow> <dark_gray>— ketik /xpr help</dark_gray>"
->>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
   usage-admin: "{prefix} <gray>Admin: <yellow>/xpr [reload|force|reset] [pemain]</yellow>"
   no-permission: "{prefix} <red>Kamu tidak punya izin untuk itu."
   players-only: "{prefix} <red>Perintah ini hanya untuk pemain."
@@ -218,8 +203,6 @@ cmd:
   forced: "{prefix} <green>Roda takdir dipaksa berputar untuk <gold>{player}</gold>."
   reset: "{prefix} <green>Data Roulette <gold>{player}</gold> direset."
   invalid-number: "{prefix} <red>Angka level tidak valid."
-<<<<<<< HEAD
-=======
   invalid-duration: "{prefix} <red>Format tidak valid.</red> <gray>Contoh: <yellow>30m</yellow>, <yellow>2h</yellow>, <yellow>1d</yellow>, <yellow>3r</yellow> (3 round), <yellow>forever</yellow>. Maks <white>{max_days}</white> hari / <white>{max_rounds}</white> round."
   force-not-participating: "{prefix} <red>{player}</red> <gray>sedang tidak ikut Roulette, jadi tidak bisa dipaksa."
 
@@ -257,4 +240,3 @@ help:
     - "<yellow>/xpr reload</yellow> <dark_gray>—</dark_gray> <gray>muat ulang config.yml & messages.yml"
     - "<yellow>/xpr force [pemain]</yellow> <dark_gray>—</dark_gray> <gray>paksa roda berputar sekarang (untuk tes)"
     - "<yellow>/xpr reset [pemain]</yellow> <dark_gray>—</dark_gray> <gray>reset data ke pengaturan awal"
->>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)

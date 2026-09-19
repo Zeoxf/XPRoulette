@@ -60,13 +60,10 @@ final class RouletteManager {
     private boolean particlesEnabled = true;
     private boolean effectParticles = true;
     private Set<Integer> warnSeconds = new HashSet<>();
-<<<<<<< HEAD
-=======
     private boolean defaultOptIn = true;
     private boolean allowLeave = true;
     private int maxDays = 365;
     private int maxRounds = 1000;
->>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
 
     RouletteManager(XPRoulette plugin, Messages msg) {
         this.plugin = plugin;
@@ -90,14 +87,11 @@ final class RouletteManager {
         broadcastMin = c.getInt("display.broadcast-min-multiplier", 8);
         warnSeconds = new HashSet<>(c.getIntegerList("display.warn-seconds"));
 
-<<<<<<< HEAD
-=======
         defaultOptIn = c.getBoolean("participation.default-opt-in", true);
         allowLeave = c.getBoolean("participation.allow-leave", true);
         maxDays = Math.max(1, c.getInt("participation.max-duration-days", 365));
         maxRounds = Math.max(1, c.getInt("participation.max-rounds", 1000));
 
->>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
         roller.load(c, plugin.getLogger());
         if (!bossbarEnabled) hideAllBars();
     }
@@ -126,15 +120,6 @@ final class RouletteManager {
         PlayerData d = readData(id);
         boolean first = d == null;
         if (first) {
-<<<<<<< HEAD
-            d = new PlayerData();
-            d.cycleElapsed = Math.max(0, interval - firstDelay);
-        }
-        players.put(id, d);
-
-        // Config berubah / data basi -> pastikan status konsisten.
-        if (d.active && d.cycleElapsed >= activeSeconds) {
-=======
             d = newPlayerData();
         }
         players.put(id, d);
@@ -145,7 +130,6 @@ final class RouletteManager {
 
         // Config berubah / data basi -> pastikan status konsisten.
         if (d.active && (!d.participating || d.cycleElapsed >= activeSeconds)) {
->>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
             removeEffects(p, d);
             d.active = false;
             d.effects.clear();
@@ -163,14 +147,11 @@ final class RouletteManager {
                     p.sendMessage(msg.render(line, "interval", formatTime(interval),
                             "active", formatTime(activeSeconds)));
                 }
-<<<<<<< HEAD
-=======
                 if (!data.participating) {
                     p.sendMessage(msg.get("join.first-optin-hint"));
                 }
             } else if (!data.participating) {
                 p.sendMessage(msg.get("join.back-off"));
->>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
             } else if (data.active) {
                 p.sendMessage(msg.get("join.back-active", "time", formatTime(activeSeconds - data.cycleElapsed)));
             } else if (data.died) {
@@ -205,13 +186,6 @@ final class RouletteManager {
 
     private void tick(Player p, PlayerData d) {
         d.cycleElapsed++;
-<<<<<<< HEAD
-
-        // Siklus baru -> roda berputar lagi.
-        if (d.cycleElapsed >= interval) {
-            d.cycleElapsed = 0;
-            d.died = false;
-=======
         boolean boundary = d.cycleElapsed >= interval;
 
         if (boundary) {
@@ -228,15 +202,11 @@ final class RouletteManager {
 
         // Siklus baru -> roda berputar lagi (hanya untuk yang ikut).
         if (boundary) {
->>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
             if (d.active) {
                 removeEffects(p, d);
                 d.active = false;
                 d.effects.clear();
             }
-<<<<<<< HEAD
-            activate(p, d);
-=======
             if (d.participating) {
                 activate(p, d);
             }
@@ -249,7 +219,6 @@ final class RouletteManager {
         }
 
         if (!d.participating) {
->>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
             updateBar(p, d);
             return;
         }
@@ -438,14 +407,11 @@ final class RouletteManager {
 
     private void updateBar(Player p, PlayerData d) {
         if (!bossbarEnabled) return;
-<<<<<<< HEAD
-=======
         if (!d.participating) {
             BossBar old = bars.remove(p.getUniqueId());
             if (old != null) p.hideBossBar(old);
             return;
         }
->>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
         BossBar bar = bars.get(p.getUniqueId());
         if (bar == null) {
             bar = BossBar.bossBar(Component.empty(), 1f, BossBar.Color.BLUE, BossBar.Overlay.PROGRESS);
@@ -492,22 +458,6 @@ final class RouletteManager {
         p.sendMessage(msg.get("status.header"));
         p.sendMessage(msg.get("status.level", "level", level, "tier", tierName(tier),
                 "multiplier", roller.multiplierFor(tier)));
-<<<<<<< HEAD
-
-        if (d.active) {
-            p.sendMessage(msg.get("status.active", "time", formatTime(activeSeconds - d.cycleElapsed),
-                    "multiplier", d.multiplier, "level", d.rolledLevel));
-            for (RolledEffect e : d.effects) {
-                p.sendMessage(msg.get(e.risk() ? "status.risk-line" : "status.good-line",
-                        "effect", displayName(e)));
-            }
-        } else {
-            p.sendMessage(msg.get(d.died ? "status.dead" : "status.cooldown",
-                    "time", formatTime(interval - d.cycleElapsed)));
-        }
-        p.sendMessage(msg.get("status.next", "levels", roller.levelsToNextTier(level),
-                "multiplier", roller.multiplierFor(tier + 1)));
-=======
         p.sendMessage(participationLine(d));
 
         if (d.participating) {
@@ -542,7 +492,6 @@ final class RouletteManager {
             return msg.get(key, "rounds", shown);
         }
         return msg.get("status.part." + side + "-forever");
->>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
     }
 
     void sendRules(CommandSender s) {
@@ -576,42 +525,26 @@ final class RouletteManager {
         }
     }
 
-<<<<<<< HEAD
-    void forceActivate(Player p) {
-        PlayerData d = players.get(p.getUniqueId());
-        if (d == null) return;
-=======
     /** @return false jika pemain sedang tidak ikut Roulette. */
     boolean forceActivate(Player p) {
         PlayerData d = players.get(p.getUniqueId());
         if (d == null || !d.participating) return false;
->>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
         if (d.active) removeEffects(p, d);
         d.cycleElapsed = 0;
         d.died = false;
         activate(p, d);
         updateBar(p, d);
-<<<<<<< HEAD
-=======
         return true;
->>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
     }
 
     void resetPlayer(Player p) {
         PlayerData old = players.get(p.getUniqueId());
         if (old != null) removeEffects(p, old);
-<<<<<<< HEAD
-        PlayerData d = new PlayerData();
-        d.cycleElapsed = Math.max(0, interval - firstDelay);
-=======
         PlayerData d = newPlayerData();
->>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
         players.put(p.getUniqueId(), d);
         updateBar(p, d);
     }
 
-<<<<<<< HEAD
-=======
     private PlayerData newPlayerData() {
         PlayerData d = new PlayerData();
         d.cycleElapsed = Math.max(0, interval - firstDelay);
@@ -721,7 +654,6 @@ final class RouletteManager {
         }
     }
 
->>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
     // ============================================================ PERSISTENSI
 
     private PlayerData readData(UUID id) {
@@ -733,8 +665,6 @@ final class RouletteManager {
         d.died = store.getBoolean(base + ".died");
         d.rolledLevel = store.getInt(base + ".rolled-level");
         d.multiplier = Math.max(1, store.getInt(base + ".multiplier", 1));
-<<<<<<< HEAD
-=======
         d.optIn = store.getBoolean(base + ".opt-in", defaultOptIn);
         try {
             d.tempType = PlayerData.Temp.valueOf(store.getString(base + ".temp.type", "NONE"));
@@ -744,7 +674,6 @@ final class RouletteManager {
         d.tempOn = store.getBoolean(base + ".temp.on");
         d.tempUntil = store.getLong(base + ".temp.until");
         d.tempRounds = store.getInt(base + ".temp.rounds");
->>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
         for (String s : store.getStringList(base + ".effects")) {
             String[] parts = s.split(":");
             if (parts.length != 3) continue;
@@ -764,14 +693,11 @@ final class RouletteManager {
         store.set(base + ".died", d.died);
         store.set(base + ".rolled-level", d.rolledLevel);
         store.set(base + ".multiplier", d.multiplier);
-<<<<<<< HEAD
-=======
         store.set(base + ".opt-in", d.optIn);
         store.set(base + ".temp.type", d.tempType.name());
         store.set(base + ".temp.on", d.tempOn);
         store.set(base + ".temp.until", d.tempUntil);
         store.set(base + ".temp.rounds", d.tempRounds);
->>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
         List<String> list = new ArrayList<>();
         for (RolledEffect e : d.effects) {
             list.add(e.key() + ":" + e.level() + ":" + e.risk());
@@ -829,15 +755,6 @@ final class RouletteManager {
         return r[n];
     }
 
-<<<<<<< HEAD
-    static String formatTime(int seconds) {
-        seconds = Math.max(0, seconds);
-        int m = seconds / 60;
-        int s = seconds % 60;
-        if (m == 0) return s + "s";
-        if (s == 0) return m + "m";
-        return m + "m " + s + "s";
-=======
     static String formatTime(long seconds) {
         seconds = Math.max(0, seconds);
         long d = seconds / 86400;
@@ -850,6 +767,5 @@ final class RouletteManager {
         if (m > 0) sb.append(m).append("m ");
         if (sec > 0 || sb.length() == 0) sb.append(sec).append("s");
         return sb.toString().trim();
->>>>>>> e762f85 (XP Roulette: sistem ikut/keluar dan help)
     }
 }
