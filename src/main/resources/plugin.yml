@@ -1,0 +1,19 @@
+name: XPRoulette
+version: 1.0.0
+main: id.xproulette.XPRoulette
+api-version: '1.21'
+description: Efek acak berdasarkan level XP - makin tinggi level, makin dahsyat (dan makin berisiko)!
+
+commands:
+  xproulette:
+    description: Perintah utama XP Roulette
+    aliases: [xpr, roulette]
+    usage: /<command> [status|aturan|preview|reload|force|reset]
+
+permissions:
+  xproulette.use:
+    description: Boleh memakai perintah dasar (status, aturan, preview)
+    default: true
+  xproulette.admin:
+    description: Boleh memakai perintah admin (reload, force, reset)
+    default: op

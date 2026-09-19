@@ -1,0 +1,98 @@
+# ============================================================
+#  XP ROULETTE - konfigurasi utama
+# ============================================================
+
+# ---------- SIASAT WAKTU ----------
+# Waktu HANYA berjalan saat pemain online.
+cycle:
+  # Panjang 1 siklus (menit). Default: tiap 30 menit roda takdir berputar.
+  interval-minutes: 30
+  # Lama efek aktif di awal siklus (menit). Sisanya (30 - 15 = 15 menit) = cooldown.
+  # Jika pemain MATI saat efek aktif, efek hangus dan sisa siklus jadi cooldown.
+  active-minutes: 15
+  # Pemain baru: roda pertama berputar setelah sekian detik sejak pertama kali join.
+  first-join-delay-seconds: 60
+
+# ---------- PENGALI (BERDASARKAN LEVEL XP) ----------
+scaling:
+  # Setiap naik sekian level = naik 1 tier.
+  levels-per-tier: 5
+  # DOUBLE = dikali 2 tiap tier  -> x1, x2, x4, x8, x16, ...   (level 0-4 = x1, 5-9 = x2, 10-14 = x4, ...)
+  # LINEAR = ditambah linear-step -> x1, x2, x3, x4, ...       (kalau DOUBLE terasa terlalu gila)
+  mode: DOUBLE
+  base-multiplier: 1
+  linear-step: 1
+  # Batas keras level efek (semua efek). Level efek = min(pengali, max-level efek, angka ini).
+  max-effect-level: 64
+
+# ---------- CARA ROULETTE MEMILIH EFEK ----------
+roll:
+  # Jumlah efek POSITIF = good-base-count + (tier / good-extra-every-tiers), maksimal good-max-count
+  good-base-count: 2
+  good-extra-every-tiers: 2
+  good-max-count: 5
+  # RISIKO: peluang dapat efek buruk = risk-base-chance + (risk-chance-per-tier * tier), maksimal risk-max-chance
+  risk-base-chance: 0.30
+  risk-chance-per-tier: 0.10
+  risk-max-chance: 1.0
+  # Tiap sekian tier, dapat +1 efek buruk tambahan (pasti). Maksimal risk-max-count efek buruk.
+  risk-extra-every-tiers: 3
+  risk-max-count: 3
+
+# ---------- TAMPILAN ----------
+display:
+  bossbar: true               # bar hitung mundur di atas layar
+  sounds: true
+  particles: true             # partikel saat roda berputar
+  effect-particles: true      # partikel efek potion di badan pemain
+  flavor-interval-seconds: 180  # pesan acak di action bar selama efek aktif (0 = mati)
+  warn-seconds: [60, 30, 10]  # peringatan sebelum efek habis / sebelum roda berputar
+  broadcast-min-multiplier: 8 # umumkan ke seluruh server jika pengali >= angka ini (0 = mati)
+
+# ---------- DAFTAR EFEK ----------
+# Nama efek = ID vanilla Minecraft (huruf kecil).
+#   weight    : makin besar makin sering keluar
+#   max-level : batas level efek tsb (supaya tidak merusak game, mis. Resistance 8 = kebal total)
+# Tidak dimasukkan dengan sengaja:
+#   instant_health / instant_damage -> efek instan, tidak punya durasi
+#   levitation -> 15 menit melayang = pemain terbang ke langit tanpa bisa turun
+# Tambah / hapus / pindah efek sesuka hati. Set max-level 255 untuk menghilangkan batas.
+effects:
+  # ----- BERKAH (efek positif) -----
+  good:
+    speed: {weight: 10, max-level: 8}
+    haste: {weight: 10, max-level: 10}
+    strength: {weight: 8, max-level: 6}
+    jump_boost: {weight: 6, max-level: 6}
+    regeneration: {weight: 8, max-level: 5}
+    resistance: {weight: 6, max-level: 4}
+    fire_resistance: {weight: 6, max-level: 1}
+    water_breathing: {weight: 6, max-level: 1}
+    night_vision: {weight: 6, max-level: 1}
+    invisibility: {weight: 3, max-level: 1}
+    health_boost: {weight: 8, max-level: 10}
+    absorption: {weight: 8, max-level: 10}
+    saturation: {weight: 4, max-level: 3}
+    luck: {weight: 6, max-level: 10}
+    slow_falling: {weight: 4, max-level: 1}
+    dolphins_grace: {weight: 4, max-level: 3}
+    conduit_power: {weight: 4, max-level: 1}
+    hero_of_the_village: {weight: 2, max-level: 5}
+  # ----- RISIKO (efek negatif) -----
+  bad:
+    slowness: {weight: 10, max-level: 4}
+    mining_fatigue: {weight: 8, max-level: 4}
+    weakness: {weight: 10, max-level: 5}
+    poison: {weight: 10, max-level: 4}
+    wither: {weight: 2, max-level: 1}       # SANGAT mematikan selama 15 menit!
+    hunger: {weight: 8, max-level: 6}
+    nausea: {weight: 6, max-level: 1}
+    blindness: {weight: 4, max-level: 1}
+    darkness: {weight: 4, max-level: 1}
+    glowing: {weight: 5, max-level: 1}
+    unluck: {weight: 6, max-level: 5}
+    bad_omen: {weight: 3, max-level: 3}      # memicu raid saat masuk desa
+    weaving: {weight: 2, max-level: 1}       # jaring laba-laba saat mati
+    oozing: {weight: 2, max-level: 1}        # slime saat mati
+    infested: {weight: 2, max-level: 1}      # silverfish saat terkena damage
+    wind_charged: {weight: 2, max-level: 1}  # ledakan angin saat mati
