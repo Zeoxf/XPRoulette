@@ -1,0 +1,35 @@
+# ============================================================
+#  Event Manager - pusat pengelolaan semua event
+#  Loot Box sendiri diatur di lootbox.yml
+# ============================================================
+
+scheduler:
+  # true = EventManager memilih & memulai event acak secara otomatis
+  auto-start: true
+  # Jeda setelah server menyala sebelum event pertama dicoba
+  first-delay: 10m
+  # Jika event gagal dimulai (mis. tidak ada pemain online), coba lagi setelah ini
+  retry-interval: 5m
+
+# Event yang enabled ikut undian weighted RNG (peluang = weight / total weight).
+# Event yang disabled TIDAK PERNAH masuk undian. Yang belum ada implementasinya
+# (supply-drop, meteor, dst) tidak berpengaruh walau di-enable.
+event-types:
+  loot-box:
+    enabled: true
+    weight: 100
+  supply-drop:
+    enabled: false
+    weight: 25
+  meteor:
+    enabled: false
+    weight: 10
+  treasure-hunt:
+    enabled: false
+    weight: 15
+  boss:
+    enabled: false
+    weight: 5
+
+# true = log detail pemilihan event
+debug: false

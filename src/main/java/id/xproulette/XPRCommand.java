@@ -1,5 +1,6 @@
 package id.xproulette;
 
+import id.xproulette.lootbox.LootBoxCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -7,23 +8,26 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
 final class XPRCommand implements TabExecutor {
 
-    private static final List<String> PLAYER_SUBS = List.of("status", "join", "leave", "aturan", "preview", "help");
+    private static final List<String> PLAYER_SUBS = List.of("status", "join", "leave", "aturan", "preview", "help", "loot");
     private static final List<String> SPEC_HINTS = List.of("forever", "30m", "1h", "1d", "3r", "5r");
     private static final List<String> ADMIN_SUBS = List.of("reload", "force", "reset");
 
     private final XPRoulette plugin;
     private final RouletteManager manager;
     private final Messages msg;
+    private final LootBoxCommand lootCommand;
 
-    XPRCommand(XPRoulette plugin, RouletteManager manager, Messages msg) {
+    XPRCommand(XPRoulette plugin, RouletteManager manager, Messages msg, LootBoxCommand lootCommand) {
         this.plugin = plugin;
         this.manager = manager;
         this.msg = msg;
+        this.lootCommand = lootCommand;
     }
 
     @Override
@@ -38,6 +42,7 @@ final class XPRCommand implements TabExecutor {
                 }
                 manager.sendStatus(p);
             }
+            case "loot" -> lootCommand.handle(sender, Arrays.copyOfRange(args, 1, args.length));
             case "aturan", "rules" -> manager.sendRules(sender);
             case "help", "bantuan", "?" -> manager.sendHelp(sender);
             case "join", "ikut", "leave", "keluar" -> {
@@ -123,6 +128,9 @@ final class XPRCommand implements TabExecutor {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
+        if (args.length >= 2 && args[0].equalsIgnoreCase("loot")) {
+            return lootCommand.tab(sender, Arrays.copyOfRange(args, 1, args.length));
+        }
         if (args.length == 1) {
             String prefix = args[0].toLowerCase(Locale.ROOT);
             List<String> all = new ArrayList<>(PLAYER_SUBS);

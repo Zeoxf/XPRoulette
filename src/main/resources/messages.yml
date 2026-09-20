@@ -194,8 +194,8 @@ rules:
 
 # ---------- PERINTAH ----------
 cmd:
-  usage: "{prefix} <gray>Gunakan: <yellow>/xpr [status|join|leave|aturan|preview|help]</yellow> <dark_gray>— ketik /xpr help</dark_gray>"
-  usage-admin: "{prefix} <gray>Admin: <yellow>/xpr [reload|force|reset] [pemain]</yellow>"
+  usage: "{prefix} <gray>Gunakan: <yellow>/xpr [status|join|leave|aturan|preview|loot|help]</yellow> <dark_gray>— ketik /xpr help</dark_gray>"
+  usage-admin: "{prefix} <gray>Admin: <yellow>/xpr [reload|force|reset] [pemain]</yellow> <dark_gray>•</dark_gray> <yellow>/xpr loot [start|stop|reload|locations]</yellow>"
   no-permission: "{prefix} <red>Kamu tidak punya izin untuk itu."
   players-only: "{prefix} <red>Perintah ini hanya untuk pemain."
   player-not-found: "{prefix} <red>Pemain tidak ditemukan / tidak online."
@@ -227,6 +227,7 @@ help:
     - "<yellow>/xpr</yellow> <dark_gray>atau</dark_gray> <yellow>/xpr status</yellow> <dark_gray>—</dark_gray> <gray>status, efek aktif, dan sisa waktu"
     - "<yellow>/xpr aturan</yellow> <dark_gray>—</dark_gray> <gray>aturan main lengkap"
     - "<yellow>/xpr preview [level]</yellow> <dark_gray>—</dark_gray> <gray>lihat pengali di level tertentu"
+    - "<gold>/xpr loot</gold> <dark_gray>—</dark_gray> <gray>status Loot Box Event (waktu tersisa, box tersedia)"
     - "<green>/xpr join</green> <dark_gray>—</dark_gray> <gray>ikut Roulette <white>selamanya</white>"
     - "<green>/xpr join [durasi|round]</green> <dark_gray>—</dark_gray> <gray>ikut <white>sementara</white>, lalu otomatis keluar"
     - "<red>/xpr leave</red> <dark_gray>—</dark_gray> <gray>keluar dari Roulette <white>selamanya</white>"
@@ -240,3 +241,62 @@ help:
     - "<yellow>/xpr reload</yellow> <dark_gray>—</dark_gray> <gray>muat ulang config.yml & messages.yml"
     - "<yellow>/xpr force [pemain]</yellow> <dark_gray>—</dark_gray> <gray>paksa roda berputar sekarang (untuk tes)"
     - "<yellow>/xpr reset [pemain]</yellow> <dark_gray>—</dark_gray> <gray>reset data ke pengaturan awal"
+
+# ==================================================================
+#  LOOT BOX EVENT
+#  Placeholder: {player} {loot_id} {rarity} {world} {x} {y} {z} {remaining} {duration}
+#               {count} {total} {opened} {radius} {event_id} {n} {item} {state}
+# ==================================================================
+lootbox:
+  # Event dimulai, lokasi sedang dicari
+  starting: "<gold><bold>[LOOT BOX]</bold></gold> <yellow>Event dimulai!</yellow> <gray><white>{player}</white> menjadi pusat area. Menyebar <white>{count}</white> Loot Box..."
+  # Semua box sudah terpasang
+  spawned: "<gold><bold>[LOOT BOX]</bold></gold> <white>{count}</white> <yellow>Loot Box</yellow> <gray>muncul dalam radius <white>{radius}</white> block dari <white>{player}</white>! Buka dengan <yellow>klik kanan</yellow>. Waktu: <white>{duration}</white>"
+  # Hanya dikirim jika announcement.reveal-coordinates: true
+  spawned-box: "<gold><bold>[LOOT BOX]</bold></gold> <gray>#{n} <dark_gray>»</dark_gray> <white>{world} {x} {y} {z}</white>"
+  # Broadcast saat rarity dengan announcement: true dibuka (selain legendary)
+  found: "<gold><bold>[LOOT BOX]</bold></gold> <white>{player}</white> <gray>menemukan Loot Box</gray> {rarity}<gray>!</gray>"
+  legendary: "<gold><bold>[LOOT BOX]</bold></gold> <white>{player}</white> <gray>menemukan</gray> {rarity} <gold><bold>Loot Box</bold></gold><gray>!!</gray> <yellow>✦</yellow>"
+  # Pesan pribadi ke pemain yang membuka
+  opened: "<gold><bold>[LOOT BOX]</bold></gold> <gray>Kamu membuka Loot Box</gray> {rarity} <dark_gray>(<white>{loot_id}</white>)</dark_gray><gray>. Isinya:</gray>"
+  opened-item: "  <dark_gray>•</dark_gray> <white>{item}</white>"
+  expired: "<gold><bold>[LOOT BOX]</bold></gold> <gray>Waktu event habis. <white>{count}</white> Loot Box yang tidak sempat dibuka telah hilang.</gray>"
+  all-opened: "<gold><bold>[LOOT BOX]</bold></gold> <green>Semua Loot Box sudah dibuka!</green> <gray>Event selesai.</gray>"
+  stopped: "<gold><bold>[LOOT BOX]</bold></gold> <gray>Event dihentikan oleh admin. <white>{count}</white> Loot Box dihapus.</gray>"
+  cancelled: "<gold><bold>[LOOT BOX]</bold></gold> <gray>Event dibatalkan karena tidak cukup lokasi yang aman. Akan dicoba lagi nanti.</gray>"
+  no-player: "<gold><bold>[LOOT BOX]</bold></gold> <red>Tidak ada pemain online yang memenuhi syarat untuk jadi pusat event.</red>"
+  cooldown: "<gold><bold>[LOOT BOX]</bold></gold> <gray>Event sedang cooldown. Berikutnya bisa dimulai dalam <white>{remaining}</white>.</gray>"
+  # Dikirim ke admin (dan console) jika sebagian box gagal mendapat lokasi valid
+  invalid-location: "<gold><bold>[LOOT BOX]</bold></gold> <red>{count} dari {total} Loot Box gagal mendapat lokasi yang valid</red> <dark_gray>({event_id})</dark_gray>"
+  not-active: "<gold><bold>[LOOT BOX]</bold></gold> <red>Tidak ada Loot Box Event yang sedang aktif.</red>"
+  already-opened: "<gold><bold>[LOOT BOX]</bold></gold> <red>Loot Box ini sudah dibuka pemain lain.</red>"
+  break-hint: "<gold><bold>[LOOT BOX]</bold></gold> <gray>Loot Box tidak bisa dihancurkan. Buka dengan <yellow>klik kanan</yellow>.</gray>"
+  bossbar: "<gold><bold>Loot Box Event</bold></gold> <dark_gray>•</dark_gray> <white>{count}</white> <gray>Loot Box masih tersedia</gray> <dark_gray>•</dark_gray> <gray>Waktu tersisa:</gray> <white>{remaining}</white>"
+
+  status:
+    header: "<gradient:#ffd700:#ff8c00><bold>━━━━ Loot Box Event ━━━━</bold></gradient>"
+    state: "<gray>Status: <white>{state}</white>"
+    remaining: "<gray>Waktu tersisa: <white>{remaining}</white>"
+    boxes: "<gray>Loot Box: <white>{count}/{total}</white> tersedia"
+    opened: "<gray>Loot Box dibuka: <white>{opened}</white>"
+    highest: "<gray>Rarity tertinggi: {rarity}"
+    event-id: "<gray>Event ID: <white>{event_id}</white>"
+    idle: "<gray>Menunggu event berikutnya (percobaan berikutnya dalam <white>{remaining}</white>)."
+
+  locations:
+    header: "<gradient:#ffd700:#ff8c00><bold>━━ Lokasi Loot Box</bold></gradient> <dark_gray>({event_id})</dark_gray>"
+    line: "<gray>#{n} {rarity} <dark_gray>»</dark_gray> <white>{world} {x} {y} {z}</white> <dark_gray>({loot_id})</dark_gray>"
+    line-opened: "<dark_gray>#{n} <strikethrough>{loot_id}</strikethrough> » sudah dibuka oleh {player}</dark_gray>"
+
+  cmd:
+    usage: "{prefix} <gray>Gunakan: <yellow>/xpr loot status</yellow>"
+    usage-admin: "{prefix} <gray>Admin: <yellow>/xpr loot [start [pemain] [force]|stop|reload|locations]</yellow>"
+    started: "{prefix} <green>Loot Box Event dimulai.</green> <gray>Lokasi sedang dicari...</gray>"
+    stopped: "{prefix} <green>Loot Box Event dihentikan.</green>"
+    reloaded: "{prefix} <green>lootbox.yml dan events.yml dimuat ulang.</green>"
+    not-running: "{prefix} <red>Tidak ada Loot Box Event yang sedang berjalan.</red>"
+    already-running: "{prefix} <red>Loot Box Event sedang berjalan.</red>"
+    disabled: "{prefix} <red>Loot Box Event dinonaktifkan di lootbox.yml (event.enabled).</red>"
+    blocked: "{prefix} <red>Tidak bisa dimulai: ada event lain yang sedang berjalan / cooldown.</red>"
+    invalid-world: "{prefix} <red>Dunia pemain itu tidak diizinkan (spawn.allowed-worlds / Nether).</red>"
+    not-ready: "{prefix} <red>Event belum siap dimulai.</red>"

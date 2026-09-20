@@ -7,9 +7,7 @@ import java.util.List;
 final class PlayerData {
 
     /** Jenis pengaturan sementara (override) partisipasi. */
-    enum Temp {
-        NONE, TIME, ROUNDS
-    }
+    enum Temp {NONE, TIME, ROUNDS}
 
     /** Detik yang sudah berjalan di siklus saat ini (hanya bertambah saat online). */
     int cycleElapsed;
@@ -17,7 +15,7 @@ final class PlayerData {
     /** true = efek Roulette sedang aktif. */
     boolean active;
 
-    /** true = pemain mati pada siklus ini. */
+    /** true = pemain mati pada siklus ini, jadi tidak dapat efek lagi sampai siklus berikutnya. */
     boolean died;
 
     /** Level XP saat roda berputar terakhir kali. */
@@ -29,8 +27,7 @@ final class PlayerData {
     /** Efek yang sedang aktif. */
     List<RolledEffect> effects = new ArrayList<>();
 
-    // ----------------------------------------------------------------
-    // Partisipasi
+    // ---------------------------------------------------------------- partisipasi
 
     /** Pengaturan permanen: true = ikut, false = tidak ikut. */
     boolean optIn = true;
@@ -38,7 +35,7 @@ final class PlayerData {
     /** Pengaturan sementara. Jika bukan NONE, ini menimpa optIn sampai habis. */
     Temp tempType = Temp.NONE;
 
-    /** Nilai pengaturan sementara. */
+    /** Nilai pengaturan sementara: true = ikut sementara, false = keluar sementara. */
     boolean tempOn;
 
     /** (TIME) waktu berakhir, epoch millis. */
@@ -47,19 +44,17 @@ final class PlayerData {
     /** (ROUNDS) sisa putaran roda. */
     int tempRounds;
 
-    /** Cache: apakah saat ini pemain benar-benar ikut. */
+    /** Cache (tidak disimpan): apakah saat ini pemain benar-benar ikut. */
     boolean participating = true;
 
-    /** Status ikut/tidak yang berlaku sekarang. */
+    /** Status ikut/tidak yang berlaku sekarang, dengan memperhitungkan pengaturan sementara. */
     boolean effective() {
         return tempType != Temp.NONE ? tempOn : optIn;
     }
 
     boolean hasRisk() {
         for (RolledEffect e : effects) {
-            if (e.risk()) {
-                return true;
-            }
+            if (e.risk()) return true;
         }
         return false;
     }

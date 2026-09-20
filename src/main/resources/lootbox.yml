@@ -1,0 +1,203 @@
+# ============================================================
+#  Random Loot Box Event
+#  Semua angka di sini bisa diubah tanpa mengubah source code.
+#  Perintah: /xpr loot [status|locations|start|stop|reload]
+# ============================================================
+
+event:
+  enabled: true
+  duration: 1h          # lama satu sesi (contoh: 90s, 30m, 1h, 1h30m)
+  cooldown: 30m         # jeda setelah sesi selesai sebelum event eksklusif berikutnya
+  persistence: true     # simpan state ke lootbox-state.yml agar aman saat restart/crash
+  end-when-all-opened: true   # sesi berakhir lebih awal jika semua box sudah dibuka
+
+# ------------------------------------------------------------
+#  Lokasi spawn
+#  Alur: RANDOM X/Z -> VALIDATE -> RETRY -> FALLBACK. Y selalu dari terrain (tidak pernah random).
+# ------------------------------------------------------------
+spawn:
+  count: 5                          # jumlah Loot Box per sesi
+  minimum-successful-spawns: 3      # di bawah ini sesi dibatalkan & semua box dibersihkan
+  shape: square                     # square | circle
+  radius-x: 500                     # area = pusat +/- radius (square) / radius terbesar (circle)
+  radius-z: 500
+  min-distance-from-player: 50      # tidak boleh muncul persis di samping pemain pusat
+  max-distance-from-player: 0       # 0 = ikuti radius/shape di atas
+  minimum-distance-between-loot: 75
+  max-location-attempts: 50         # percobaan random per Loot Box sebelum masuk fallback
+  min-y: 50
+  max-y: 320
+  void-margin: 8                    # tolak permukaan yang terlalu dekat dasar dunia (void)
+
+  # Air belum didukung sebagai lokasi spawn; lava tidak pernah boleh (aturan kritis).
+  allow-water: false
+  allow-lava: false
+
+  # Pemuatan chunk selalu asinkron & dibatasi supaya tidak lag.
+  generate-chunks: true             # false = hanya chunk yang sudah pernah digenerate
+  max-chunk-loads: 150              # anggaran chunk yang boleh dimuat per sesi
+
+  # Kosong = semua dunia. Nether selalu ditolak (deteksi permukaan tidak berlaku di sana).
+  allowed-worlds:
+    - world
+
+  # Area terlarang (spawn server, arena, hub, dst). Contoh:
+  # protected-zones:
+  #   - world: world
+  #     min-x: -500
+  #     max-x: 500
+  #     min-z: -500
+  #     max-z: 500
+  protected-zones: []
+
+  # Block yang tidak boleh jadi tanah, atau berada di lokasi box / ruang di atasnya.
+  # (Daun, batang pohon, air, lava, dan udara otomatis ditolak.)
+  unsafe-blocks:
+    - CACTUS
+    - MAGMA_BLOCK
+    - CAMPFIRE
+    - SOUL_CAMPFIRE
+    - FIRE
+    - SOUL_FIRE
+    - POWDER_SNOW
+    - SWEET_BERRY_BUSH
+    - WITHER_ROSE
+    - COBWEB
+    - HONEY_BLOCK
+    - POINTED_DRIPSTONE
+    - BEDROCK
+
+# ------------------------------------------------------------
+#  Fallback jika lokasi sulit ditemukan (urut dari atas ke bawah)
+#  1) retry (max-location-attempts)  2) perlebar radius  3) longgarkan jarak antar loot,
+#  lalu jarak dari pemain  4) cari lokasi valid terdekat dari pusat.
+#  TIDAK PERNAH dilonggarkan: world, world border, zona terlarang, void, lava, air, block solid.
+#  Jika semua gagal: box itu dianggap FAILED (tidak pernah dipaksa spawn).
+# ------------------------------------------------------------
+fallback:
+  enabled: true
+  expand-search: true               # false = box selalu dalam radius awal
+  expansion:                        # pengali radius per tahap (1.0 = radius awal, dilewati)
+    first: 1.0
+    second: 1.25
+    third: 1.5
+  max-radius: 750                   # batas mutlak perluasan
+  attempts-per-stage: 25            # percobaan per tahap fallback
+  relax-rules: true
+  nearest-search-radius: 500        # 0 = matikan pencarian terdekat
+  nearest-step: 50
+
+# ------------------------------------------------------------
+#  Pemilihan pemain pusat area. Saat ini: random-online-player
+# ------------------------------------------------------------
+player-selection:
+  mode: random-online-player
+
+# ------------------------------------------------------------
+#  Rarity: peluang = weight / total weight (bobot 0 = tidak pernah keluar)
+#  block = tampilan Loot Box di dunia; name = tampilan di pesan (MiniMessage)
+# ------------------------------------------------------------
+rarity:
+  common:
+    weight: 50
+    name: "<gray>Common</gray>"
+    block: BARREL
+  rare:
+    weight: 24
+    name: "<blue>Rare</blue>"
+    block: CHEST
+  epic:
+    weight: 25
+    name: "<light_purple>Epic</light_purple>"
+    block: ENDER_CHEST
+  legendary:
+    weight: 1
+    name: "<gold><bold>Legendary</bold></gold>"
+    block: SHULKER_BOX
+
+# ------------------------------------------------------------
+#  Loot
+# ------------------------------------------------------------
+loot:
+  min-items: 1
+  max-items: 4
+  allow-duplicate-items: false      # false = satu box tidak memberi item yang sama dua kali
+
+# Contoh isi - bebas diubah. item = nama Material Bukkit, jumlah acak min..max, peluang = weight.
+# Tiap tabel boleh menimpa jumlah item dengan min-items / max-items sendiri.
+loot-tables:
+  common:
+    items:
+      - {item: IRON_INGOT, min: 4, max: 16, weight: 40}
+      - {item: GOLD_INGOT, min: 2, max: 8, weight: 30}
+      - {item: BREAD, min: 4, max: 16, weight: 30}
+      - {item: COAL, min: 8, max: 24, weight: 20}
+      - {item: ARROW, min: 8, max: 32, weight: 15}
+  rare:
+    items:
+      - {item: DIAMOND, min: 1, max: 3, weight: 40}
+      - {item: GOLDEN_APPLE, min: 1, max: 2, weight: 20}
+      - {item: EXPERIENCE_BOTTLE, min: 4, max: 12, weight: 25}
+      - {item: EMERALD, min: 2, max: 8, weight: 25}
+      - {item: IRON_INGOT, min: 8, max: 24, weight: 25}
+  epic:
+    items:
+      - {item: DIAMOND, min: 4, max: 8, weight: 40}
+      - {item: ENCHANTED_GOLDEN_APPLE, min: 1, max: 1, weight: 5}
+      - {item: EXPERIENCE_BOTTLE, min: 12, max: 32, weight: 25}
+      - {item: GOLDEN_APPLE, min: 2, max: 4, weight: 20}
+      - {item: NETHERITE_SCRAP, min: 1, max: 3, weight: 10}
+  legendary:
+    min-items: 2
+    max-items: 4
+    items:
+      - {item: NETHERITE_INGOT, min: 2, max: 4, weight: 50}
+      - {item: DIAMOND_BLOCK, min: 1, max: 3, weight: 30}
+      - {item: ENCHANTED_GOLDEN_APPLE, min: 1, max: 3, weight: 20}
+      - {item: TOTEM_OF_UNDYING, min: 1, max: 2, weight: 15}
+
+# ------------------------------------------------------------
+#  Efek. Nama partikel & sound = konstanta Bukkit (contoh: END_ROD, BLOCK_BEACON_ACTIVATE).
+#  Nama yang salah hanya memberi warning di console; efek itu dilewati.
+# ------------------------------------------------------------
+effects:
+  spawn:
+    particle: END_ROD
+    sound: BLOCK_BEACON_ACTIVATE
+    count: 60
+    volume: 1.0
+    pitch: 1.0
+  open:
+    particle: HAPPY_VILLAGER
+    sound: ENTITY_PLAYER_LEVELUP
+    count: 25
+    volume: 1.0
+    pitch: 1.2
+  legendary:
+    particle: TOTEM_OF_UNDYING
+    sound: UI_TOAST_CHALLENGE_COMPLETE
+    count: 150
+    volume: 1.0
+    pitch: 1.0
+    global-sound: true              # true = suara terdengar oleh semua pemain
+  ambient:                          # kilau kecil di atas box yang belum dibuka, membantu pencarian
+    enabled: true
+    interval-seconds: 3
+    particle: END_ROD
+    count: 6
+
+bossbar:
+  enabled: true
+  color: YELLOW                     # PINK BLUE RED GREEN YELLOW PURPLE WHITE
+  overlay: PROGRESS                 # PROGRESS NOTCHED_6 NOTCHED_10 NOTCHED_12 NOTCHED_20
+
+# Broadcast saat pemain membuka box dengan rarity ini
+announcement:
+  common: false
+  rare: false
+  epic: true
+  legendary: true
+  reveal-coordinates: false         # true = koordinat semua box diumumkan di chat saat spawn
+
+# true = log detail tiap kandidat lokasi yang ditolak/diterima + perubahan state
+debug: false
