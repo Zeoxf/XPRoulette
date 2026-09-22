@@ -49,6 +49,13 @@ public final class SenzyCommand implements CommandExecutor, TabCompleter {
 
     private void help(CommandSender sender) {
         plugin.messages().sendList(sender, "help.main");
+        // SenzyShop plugin terpisah yang membungkus /senzy lewat CommandBridge miliknya sendiri
+        // (lihat SenzyShop#bridgeWithExistingSenzyCommand). Kita tidak menyentuh plugin itu sama
+        // sekali - hanya menambahkan baris info di sini kalau plugin-nya terdeteksi aktif, supaya
+        // pemain tahu subcommand shop/balance/sell/sellall/restock juga tersedia di /senzy.
+        if (org.bukkit.Bukkit.getPluginManager().isPluginEnabled("SenzyShop")) {
+            plugin.messages().sendList(sender, "help.shop-hint");
+        }
     }
 
     @Override

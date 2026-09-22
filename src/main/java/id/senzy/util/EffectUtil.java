@@ -4,6 +4,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Registry;
 import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.Locale;
@@ -37,6 +38,12 @@ public final class EffectUtil {
     public static Particle particle(String name) {
         if (name == null || name.isBlank()) return null;
         return Registry.PARTICLE_TYPE.get(NamespacedKey.minecraft(name.trim().toLowerCase(Locale.ROOT)));
+    }
+
+    /** ID vanilla huruf kecil, contoh "efficiency", "sweeping_edge", "silk_touch". */
+    public static Enchantment enchant(String name) {
+        if (name == null || name.isBlank()) return null;
+        return Registry.ENCHANTMENT.get(NamespacedKey.minecraft(name.trim().toLowerCase(Locale.ROOT)));
     }
 
     /**

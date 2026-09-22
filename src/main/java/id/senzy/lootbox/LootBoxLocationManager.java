@@ -168,6 +168,7 @@ public final class LootBoxLocationManager {
 
     private void readInto(Area a, ConfigurationSection sa, ConfigurationSection adj) {
         if (sa != null) {
+            boolean modeGiven = sa.contains("mode");
             try {
                 a.mode = Mode.valueOf(sa.getString("mode", a.mode.name()).toUpperCase(Locale.ROOT));
             } catch (IllegalArgumentException e) {
@@ -191,6 +192,22 @@ public final class LootBoxLocationManager {
                 a.maxX = Math.max(x1, x2);
                 a.minZ = Math.min(z1, z2);
                 a.maxZ = Math.max(z1, z2);
+            }
+            // Bentuk alternatif yang lebih sederhana: center-x/center-z + size-x/size-z (area persegi
+            // di sekitar titik pusat, mis. 1000x1000). Kalau ada dan mode tidak ditulis eksplisit,
+            // otomatis jadi REGION.
+            if (sa.contains("center-x") || sa.contains("size-x")) {
+                int centerX = sa.getInt("center-x", a.cx);
+                int centerZ = sa.getInt("center-z", a.cz);
+                int sizeX = Math.max(2, sa.getInt("size-x", Math.max(2, a.maxX - a.minX)));
+                int sizeZ = Math.max(2, sa.getInt("size-z", Math.max(2, a.maxZ - a.minZ)));
+                a.cx = centerX;
+                a.cz = centerZ;
+                a.minX = centerX - sizeX / 2;
+                a.maxX = centerX + sizeX / 2;
+                a.minZ = centerZ - sizeZ / 2;
+                a.maxZ = centerZ + sizeZ / 2;
+                if (!modeGiven) a.mode = Mode.REGION;
             }
         }
         if (adj != null) {

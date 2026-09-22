@@ -138,25 +138,31 @@ boosts:
 # =====================================================================
 lootbox:
   enabled: true
-  # Jumlah LootBox per session.
-  amount: 5
+  # RNG #1: jumlah LootBox per session, dipilih acak di antara min-boxes..max-boxes tiap kali event dimulai.
+  min-boxes: 3
+  max-boxes: 8
   session-duration: "1h"
   # Session berakhir otomatis begitu semua LootBox terbuka (selain karena waktu habis).
   end-when-all-opened: true
   # Tampilkan koordinat pasti di broadcast/locate. Default false (hanya jarak & arah).
   reveal-coordinates: false
+  # Jarak minimum antar LootBox dalam satu session (RNG #2 - lokasi - tetap memakai ini).
+  minimum-distance-between-boxes: 75
 
   auto-start:
-    enabled: false
-    interval: "3h"
+    enabled: true
+    # Event LootBox muncul sendiri secara acak - jeda antar event dipilih ulang tiap kali
+    # di antara min-interval..max-interval (BUKAN interval tetap).
+    min-interval: "30m"
+    max-interval: "3h"
     min-players: 1
 
-  # Bobot rarity (harus berjumlah 100; jika tidak, tetap dipakai sebagai bobot relatif).
+  # Bobot rarity (RNG #3, harus berjumlah 100; jika tidak, tetap dipakai sebagai bobot relatif).
   rarity:
-    common: 50
-    rare: 24
-    epic: 25
-    legendary: 1
+    common: 50.0
+    rare: 24.0
+    epic: 25.0
+    legendary: 1.0
 
   announcements:
     common: false
@@ -173,12 +179,15 @@ lootbox:
 
   # --------------------------------------------------------------- area spawn
   spawn-area:
-    # POINT = sebar di sekitar satu titik (lihat 'adjust'); RADIUS = lingkaran dari center; REGION = kotak min/max.
-    mode: "RADIUS"
     world: "world"
-    center: { x: 0, y: 64, z: 0 }
-    radius: 500
-    region: { min-x: -500, max-x: 500, min-z: -500, max-z: 500 }
+    # Bentuk persegi 1000x1000 di sekitar (center-x, center-z) - RNG #2 (lokasi) memilih titik
+    # acak di dalam area ini. Kalau ingin lingkaran/titik tunggal, ganti ke 'mode', 'center', 'radius'
+    # (lihat komentar di LootBoxLocationManager) - dua gaya ini bisa dipakai bergantian.
+    center-x: 0
+    center-z: 0
+    size-x: 1000
+    size-z: 1000
+    center: { y: 64 }
 
   # Hanya dipakai pada mode POINT. 'radius' = sebaran lokal di sekitar anchor (BUKAN offset Y).
   # 'y-range' = toleransi ketinggian tanah dibanding Y anchor (terpisah dari radius).
@@ -190,7 +199,7 @@ lootbox:
   spawn:
     # Percobaan acak maksimum per LootBox sebelum pindah ke tahap fallback berikutnya.
     max-attempts: 50
-    # Ronde tambahan pencarian jika LootBox yang ditemukan masih kurang dari 'amount'.
+    # Ronde tambahan pencarian jika LootBox yang ditemukan masih kurang dari target.
     extra-rounds: 1
     # Minimal LootBox yang harus valid agar session tetap dimulai.
     minimum-successful-spawns: 3
@@ -274,25 +283,84 @@ lootbox:
       count: 40
 
 # =====================================================================
-#  LOOT TABLE - per rarity, weighted
+#  GACHA ENCHANTMENT SYSTEM
+# =====================================================================
+
+# EXP Bottle WAJIB ada di setiap LootBox, jumlahnya random 10-30, ditambahkan
+# SETELAH reward utama selesai (bukan bagian dari RNG rarity).
+guaranteed-reward:
+  experience-bottle:
+    enabled: true
+    min: 10
+    max: 30
+
+# RARE: peluang tambahan mendapat SATU tool sederhana (Iron/Gold, 1-2 enchant, level rendah)
+# di luar daftar material 'loot.rare' di bawah.
+rare:
+  tool:
+    chance: 0.35
+    min-enchants: 1
+    max-enchants: 2
+    max-enchantment-level: 3
+
+# EPIC: selalu SATU tool/armor IRON dengan 2-5 enchant acak, level 1-5 (dua RNG terpisah:
+# jumlah enchant dan level tiap enchant, supaya banyak enchant tidak otomatis berarti level tinggi).
+epic:
+  tool:
+    min-enchants: 2
+    max-enchants: 5
+    max-enchantment-level: 5
+    maximum-material: IRON
+
+# LEGENDARY: selalu SATU tool/armor DIAMOND dengan 2-7 enchant acak, level 1-10.
+# TIDAK PERNAH Netherite. Template = bonus terpisah, 1/1000, tanpa pity/counter.
+legendary:
+  tool:
+    min-enchants: 2
+    max-enchants: 7
+    max-enchantment-level: 10
+    maximum-material: DIAMOND
+  template:
+    enabled: true
+    chance: 0.1
+    denominator: 1000
+    material: SMITHING_TEMPLATE
+
+enchantment:
+  # true = kombinasi enchant yang biasanya konflik (mis. Fortune + Silk Touch) tetap boleh muncul.
+  # false = ikuti aturan konflik vanilla saat memilih pool enchant.
+  allow-incompatible: true
+
+# =====================================================================
+#  LOOT TABLE - material dasar per rarity (weighted). Tool/armor ber-enchant
+#  untuk Epic & Legendary DIHASILKAN LEWAT GACHA DI ATAS, bukan dari sini.
 # =====================================================================
 loot:
   common:
-    - { item: "IRON_INGOT", min: 2, max: 5, weight: 40 }
-    - { item: "GOLD_INGOT", min: 1, max: 3, weight: 25 }
-    - { item: "BREAD", min: 4, max: 8, weight: 20 }
-    - { item: "ARROW", min: 8, max: 16, weight: 15 }
+    - { item: "COAL", min: 10, max: 40, weight: 20 }
+    - { item: "IRON_NUGGET", min: 10, max: 30, weight: 15 }
+    - { item: "IRON_INGOT", min: 4, max: 16, weight: 15 }
+    - { item: "COPPER_INGOT", min: 8, max: 32, weight: 15 }
+    - { item: "GOLD_NUGGET", min: 10, max: 30, weight: 10 }
+    - { item: "REDSTONE", min: 10, max: 40, weight: 10 }
+    - { item: "LAPIS_LAZULI", min: 8, max: 24, weight: 8 }
+    - { item: "QUARTZ", min: 4, max: 16, weight: 7 }
+    - { item: "BREAD", min: 4, max: 10, weight: 8 }
+    - { item: "COOKED_BEEF", min: 4, max: 10, weight: 8 }
+    - { item: "ARROW", min: 8, max: 16, weight: 8 }
   rare:
-    - { item: "GOLD_INGOT", min: 3, max: 6, weight: 30 }
-    - { item: "DIAMOND", min: 1, max: 2, weight: 25 }
-    - { item: "EXPERIENCE_BOTTLE", min: 4, max: 8, weight: 25 }
-    - { item: "ENDER_PEARL", min: 1, max: 3, weight: 20 }
+    - { item: "DIAMOND", min: 1, max: 3, weight: 25 }
+    - { item: "EMERALD", min: 4, max: 10, weight: 20 }
+    - { item: "GOLD_INGOT", min: 4, max: 10, weight: 20 }
+    - { item: "ENCHANTED_BOOK", min: 1, max: 1, weight: 10 }
+    - { item: "GOLDEN_APPLE", min: 1, max: 2, weight: 10 }
+    - { item: "ENDER_PEARL", min: 1, max: 3, weight: 15 }
+  # Dipakai HANYA sebagai cadangan kalau gacha enchant gagal total (mis. semua enchant tidak dikenal
+  # di versi server ini) - dalam kondisi normal tidak pernah terpakai.
   epic:
-    - { item: "DIAMOND", min: 2, max: 4, weight: 35 }
-    - { item: "EMERALD", min: 3, max: 6, weight: 25 }
-    - { item: "ENCHANTED_GOLDEN_APPLE", min: 1, max: 1, weight: 10 }
-    - { item: "NETHERITE_SCRAP", min: 1, max: 2, weight: 30 }
+    - { item: "DIAMOND", min: 2, max: 4, weight: 60 }
+    - { item: "EMERALD", min: 3, max: 6, weight: 40 }
   legendary:
-    - { item: "NETHERITE_INGOT", min: 1, max: 2, weight: 40 }
-    - { item: "TOTEM_OF_UNDYING", min: 1, max: 1, weight: 30 }
-    - { item: "ENCHANTED_GOLDEN_APPLE", min: 1, max: 2, weight: 30 }
+    - { item: "EMERALD", min: 6, max: 12, weight: 40 }
+    - { item: "GOLDEN_APPLE", min: 2, max: 3, weight: 30 }
+    - { item: "ENCHANTED_BOOK", min: 1, max: 2, weight: 30 }

@@ -51,6 +51,12 @@ help:
     - "<gray> <white>/senzy lootbox status <gray>- Status event saat ini"
     - "<gray> <white>/senzy lootbox locate <gray>- Cari LootBox terdekat"
     - "<gray> <white>/senzy lootbox gui <gray>- Buka menu LootBox"
+  shop-hint:
+    - "<prefix><yellow><bold>Senzy Shop</bold>"
+    - "<gray> <white>/senzy shop <gray>- Buka toko"
+    - "<gray> <white>/senzy balance <gray>- Cek saldo Senzy Coin"
+    - "<gray> <white>/senzy sell <gray>- Jual item yang kamu pegang"
+    - "<gray> <white>/senzy sellall <gray>- Jual semua item yang bisa dijual"
 
 # =====================================================================
 #  XPR

@@ -1,21 +1,31 @@
-name: Build
+name: Build Senzy
 
 on:
   push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 21
+          java-version: '21'
           cache: maven
-      - run: mvn -B clean package
-      - uses: actions/upload-artifact@v4
+
+      - name: Build with Maven
+        run: mvn -B clean package
+
+      - name: Upload jar
+        uses: actions/upload-artifact@v4
         with:
-          name: XPRoulette
-          path: target/*.jar
+          name: senzyxprloot-jar
+          path: target/SenzyXPRLoot-*.jar

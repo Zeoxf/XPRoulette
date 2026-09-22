@@ -49,6 +49,7 @@ public final class LootBoxManager implements SenzyModule {
     private final LootBoxBeaconManager beacons;
     private final LootBoxSpawner spawner;
     private final LootTable loot;
+    private final RewardGenerator rewards;
 
     private LootBoxData state = new LootBoxData();
     private final Map<BlockPos, LootBox> protectedBlocks = new HashMap<>();
@@ -60,7 +61,8 @@ public final class LootBoxManager implements SenzyModule {
 
     // cache config
     private boolean enabled = true;
-    private int amount = 5;
+    private int minBoxes = 3;
+    private int maxBoxes = 8;
     private long sessionMillis = 3_600_000L;
     private int minimumSpawns = 3;
     private int extraRounds = 1;
@@ -72,7 +74,9 @@ public final class LootBoxManager implements SenzyModule {
     private BossBar.Color barColor = BossBar.Color.YELLOW;
     private BossBar.Overlay barOverlay = BossBar.Overlay.PROGRESS;
     private boolean autoStart;
-    private long autoInterval = 10_800_000L;
+    private long autoMinInterval = 1_800_000L;
+    private long autoMaxInterval = 10_800_000L;
+    private long nextAutoAt;
     private int autoMinPlayers = 1;
 
     public LootBoxManager(SenzyPlugin plugin) {
@@ -81,6 +85,7 @@ public final class LootBoxManager implements SenzyModule {
         this.beacons = new LootBoxBeaconManager(plugin);
         this.spawner = new LootBoxSpawner(plugin);
         this.loot = new LootTable(plugin);
+        this.rewards = new RewardGenerator(plugin, loot);
     }
 
     @Override
@@ -117,9 +122,11 @@ public final class LootBoxManager implements SenzyModule {
     private void loadSettings() {
         FileConfiguration c = plugin.config().cfg();
         enabled = c.getBoolean("lootbox.enabled", true);
-        amount = Math.max(1, c.getInt("lootbox.amount", 5));
+        int fallback = Math.max(1, c.getInt("lootbox.amount", 5));
+        minBoxes = Math.max(1, c.getInt("lootbox.min-boxes", fallback));
+        maxBoxes = Math.max(minBoxes, c.getInt("lootbox.max-boxes", fallback));
         sessionMillis = plugin.config().duration("lootbox.session-duration", 3_600_000L);
-        minimumSpawns = Math.max(1, Math.min(amount, c.getInt("lootbox.spawn.minimum-successful-spawns", 3)));
+        minimumSpawns = Math.max(1, Math.min(minBoxes, c.getInt("lootbox.spawn.minimum-successful-spawns", 3)));
         extraRounds = Math.max(0, c.getInt("lootbox.spawn.extra-rounds", 1));
         endWhenAllOpened = c.getBoolean("lootbox.end-when-all-opened", true);
         revealCoordinates = c.getBoolean("lootbox.reveal-coordinates", false);
@@ -140,12 +147,25 @@ public final class LootBoxManager implements SenzyModule {
         bossbarEnabled = c.getBoolean("lootbox.bossbar.enabled", true);
         barColor = enumOf(BossBar.Color.class, c.getString("lootbox.bossbar.color", "YELLOW"), BossBar.Color.YELLOW);
         barOverlay = enumOf(BossBar.Overlay.class, c.getString("lootbox.bossbar.overlay", "PROGRESS"), BossBar.Overlay.PROGRESS);
-        autoStart = c.getBoolean("lootbox.auto-start.enabled", false);
-        autoInterval = plugin.config().duration("lootbox.auto-start.interval", 10_800_000L);
+        boolean hasFlatInterval = c.contains("lootbox.spawn-interval");
+        autoStart = c.getBoolean("lootbox.auto-start.enabled", hasFlatInterval);
+        if (c.contains("lootbox.auto-start.min-interval") || c.contains("lootbox.auto-start.max-interval")) {
+            // Event acak: interval berbeda-beda tiap kali, dipilih ulang di antara min..max.
+            autoMinInterval = plugin.config().duration("lootbox.auto-start.min-interval", 1_800_000L);
+            autoMaxInterval = Math.max(autoMinInterval, plugin.config().duration("lootbox.auto-start.max-interval", 10_800_000L));
+        } else {
+            // Config lama (satu nilai tetap) - dipakai sebagai min=max, jadi TIDAK acak.
+            long fixed = hasFlatInterval
+                    ? plugin.config().duration("lootbox.spawn-interval", 10_800_000L)
+                    : plugin.config().duration("lootbox.auto-start.interval", 10_800_000L);
+            autoMinInterval = fixed;
+            autoMaxInterval = fixed;
+        }
         autoMinPlayers = Math.max(0, c.getInt("lootbox.auto-start.min-players", 1));
 
         locations.load();
         loot.load();
+        rewards.load();
         beacons.reload();
     }
 
@@ -173,6 +193,7 @@ public final class LootBoxManager implements SenzyModule {
         }
         if (!isActive()) retryPendingCleanup();
         beacons.startMarkers(this::activeBoxes);
+        rollNextAuto(Math.max(state.lastEnd, bootTime));
         tickTask = Bukkit.getScheduler().runTaskTimer(plugin, this::tick, 20L, 20L);
         if (isActive()) showBar();
         if (isActive()) {
@@ -180,6 +201,14 @@ public final class LootBoxManager implements SenzyModule {
                     + unopenedCount() + "/" + state.session.amount() + " LootBox tersisa, sisa waktu "
                     + TimeUtil.format(remainingMillis()) + ".");
         }
+    }
+
+    /** Memilih ulang kapan pengecekan auto-start berikutnya boleh memicu (acak di antara min..max). */
+    private void rollNextAuto(long base) {
+        long span = Math.max(0, autoMaxInterval - autoMinInterval);
+        long extra = span > 0 ? RandomUtil.between(0, (int) Math.min(Integer.MAX_VALUE, span)) : 0;
+        nextAutoAt = base + autoMinInterval + extra;
+        plugin.debug("LootBox auto-start berikutnya dijadwalkan sekitar " + TimeUtil.format(nextAutoAt - System.currentTimeMillis()) + " lagi.");
     }
 
     private void stopRuntime() {
@@ -215,8 +244,17 @@ public final class LootBoxManager implements SenzyModule {
         return locations;
     }
 
+    /** Rentang jumlah LootBox per session (RNG 3-8 secara default). */
     public int configuredAmount() {
-        return amount;
+        return maxBoxes;
+    }
+
+    public int minBoxes() {
+        return minBoxes;
+    }
+
+    public int maxBoxes() {
+        return maxBoxes;
     }
 
     public long remainingMillis() {
@@ -309,12 +347,13 @@ public final class LootBoxManager implements SenzyModule {
         }
         starting = true;
         int token = ++startToken;
-        msg.send(who, "lootbox.admin.searching", "amount", amount);
-        searchRound(who, world, area, new ArrayList<>(), extraRounds + 1, token);
+        int target = RandomUtil.between(minBoxes, maxBoxes); // RNG #1: jumlah LootBox per session
+        msg.send(who, "lootbox.admin.searching", "amount", target);
+        searchRound(who, world, area, new ArrayList<>(), extraRounds + 1, token, target);
     }
 
-    private void searchRound(CommandSender who, World world, Area area, List<SpawnPoint> found, int roundsLeft, int token) {
-        int need = amount - found.size();
+    private void searchRound(CommandSender who, World world, Area area, List<SpawnPoint> found, int roundsLeft, int token, int target) {
+        int need = target - found.size();
         spawner.findLocations(world, area, need, new ArrayList<>(found)).whenComplete((points, err) -> runMain(() -> {
             if (token != startToken) return; // dibatalkan (reset/reload)
             if (err != null) {
@@ -322,16 +361,16 @@ public final class LootBoxManager implements SenzyModule {
             } else if (points != null) {
                 found.addAll(points);
             }
-            if (err == null && found.size() < amount && roundsLeft > 1) {
-                plugin.debug("LootBox: baru " + found.size() + "/" + amount + " lokasi, mencari lagi (sisa ronde " + (roundsLeft - 1) + ")");
-                searchRound(who, world, area, found, roundsLeft - 1, token);
+            if (err == null && found.size() < target && roundsLeft > 1) {
+                plugin.debug("LootBox: baru " + found.size() + "/" + target + " lokasi, mencari lagi (sisa ronde " + (roundsLeft - 1) + ")");
+                searchRound(who, world, area, found, roundsLeft - 1, token, target);
                 return;
             }
-            finishStart(who, world, area, found);
+            finishStart(who, world, area, found, target);
         }));
     }
 
-    private void finishStart(CommandSender who, World world, Area area, List<SpawnPoint> found) {
+    private void finishStart(CommandSender who, World world, Area area, List<SpawnPoint> found, int target) {
         starting = false;
         MessageManager msg = plugin.messages();
         long now = System.currentTimeMillis();
@@ -371,7 +410,7 @@ public final class LootBoxManager implements SenzyModule {
         state.save(plugin.data());
         showBar();
 
-        msg.send(who, "lootbox.admin.started", "count", built.size(), "amount", amount);
+        msg.send(who, "lootbox.admin.started", "count", built.size(), "amount", target);
         msg.broadcast("lootbox.broadcast.start", "count", built.size(), "duration", TimeUtil.format(sessionMillis));
         if (revealCoordinates) {
             for (LootBox b : built) {
@@ -415,6 +454,7 @@ public final class LootBoxManager implements SenzyModule {
         for (LootBox b : new ArrayList<>(state.boxes.values())) cleanupBox(b);
         state.boxes.values().removeIf(b -> b.originals().isEmpty()); // sisanya = world belum termuat, dicoba lagi nanti
         state.lastEnd = System.currentTimeMillis();
+        rollNextAuto(state.lastEnd);
         hideBar();
         state.save(plugin.data());
         plugin.debug("LootBox session ended: " + s.eventId() + " reason=" + reason + " opened=" + opened + "/" + total);
@@ -449,7 +489,7 @@ public final class LootBoxManager implements SenzyModule {
 
         // Tandai dulu, baru beri hadiah: tidak ada celah double-open.
         box.markOpened(p.getUniqueId(), p.getName());
-        List<ItemStack> rewards = loot.roll(box.rarity());
+        List<ItemStack> rewards = this.rewards.generate(box.rarity());
         Location at = new Location(p.getWorld(), box.x() + 0.5, box.y() + 0.5, box.z() + 0.5);
         Map<Integer, ItemStack> overflow = p.getInventory().addItem(rewards.toArray(new ItemStack[0]));
         for (ItemStack left : overflow.values()) p.getWorld().dropItemNaturally(p.getLocation(), left);
@@ -554,12 +594,11 @@ public final class LootBoxManager implements SenzyModule {
             }
             return;
         }
-        if (autoStart && enabled && !starting && Bukkit.getOnlinePlayers().size() >= autoMinPlayers) {
-            long base = Math.max(state.lastEnd, bootTime);
-            if (now - base >= autoInterval) {
-                plugin.debug("LootBox auto-start");
-                start(Bukkit.getConsoleSender());
-            }
+        if (autoStart && enabled && !starting && now >= nextAutoAt
+                && Bukkit.getOnlinePlayers().size() >= autoMinPlayers) {
+            plugin.debug("LootBox auto-start (event acak)");
+            start(Bukkit.getConsoleSender());
+            rollNextAuto(now); // jadwal berikutnya diacak ulang, tidak memakai interval tetap
         }
     }
 

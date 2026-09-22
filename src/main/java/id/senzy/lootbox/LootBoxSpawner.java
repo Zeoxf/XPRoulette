@@ -417,7 +417,8 @@ public final class LootBoxSpawner {
         s.borderMargin = Math.max(0, c.getInt("lootbox.spawn.border-margin", 16));
         s.maxChunkLoads = Math.max(1, c.getInt("lootbox.spawn.max-chunk-loads", 150));
         s.yRange = Math.max(0, c.getInt("lootbox.adjust.y-range", 16));
-        s.minDistance = Math.max(0, c.getDouble("lootbox.spawn.minimum-distance-between", 75));
+        double flatMinDistance = c.getDouble("lootbox.minimum-distance-between-boxes", -1);
+        s.minDistance = Math.max(0, flatMinDistance >= 0 ? flatMinDistance : c.getDouble("lootbox.spawn.minimum-distance-between", 75));
         s.pointMinDistance = Math.max(0, c.getDouble("lootbox.spawn.point-minimum-distance", 4));
         s.generate = c.getBoolean("lootbox.spawn.generate-chunks", true);
         s.requireBeam = c.getBoolean("lootbox.beacon.require-beam", false);

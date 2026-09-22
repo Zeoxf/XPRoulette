@@ -5,10 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>id.senzy</groupId>
-    <artifactId>Senzy</artifactId>
+    <artifactId>SenzyXPRLoot</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
-    <name>Senzy</name>
+    <name>SenzyXPRLoot</name>
 
     <properties>
         <maven.compiler.release>21</maven.compiler.release>
@@ -44,7 +44,7 @@
     </dependencies>
 
     <build>
-        <finalName>Senzy-${project.version}</finalName>
+        <finalName>SenzyXPRLoot-${project.version}</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>

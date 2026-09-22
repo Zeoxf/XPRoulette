@@ -1,15 +1,15 @@
-name: Senzy
+name: SenzyXPRLoot
 version: '${project.version}'
 main: id.senzy.SenzyPlugin
 api-version: '1.21'
 load: POSTWORLD
 authors: [Senzy]
-description: Senzy ecosystem - XPR Boost Progression + LootBox Event System
+description: Senzy XPR (Boost Progression) & LootBox Event System
 softdepend: [PlaceholderAPI, Geyser-Spigot, floodgate, ViaVersion]
 
 commands:
   senzy:
-    description: Perintah utama Senzy
+    description: Perintah utama Senzy XPR & LootBox
     usage: /<command> [xpr|lootbox|reload|help]
     permission: senzy.use
 
