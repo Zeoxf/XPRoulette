@@ -1,302 +1,331 @@
-# ============================================================
-#  XP ROULETTE - pesan (format MiniMessage)
-#  Placeholder memakai kurung kurawal, contoh: {player}, {time}, {multiplier}
-#  Hindari tanda < atau > biasa di teks (gunakan [ ] sebagai gantinya).
-# ============================================================
+# =====================================================================
+#  SENZY - messages.yml
+#  Semua teks yang dilihat pemain. Format: MiniMessage (<green>, <bold>, dst).
+#  Placeholder ditulis sebagai tag, contoh: <boost>, <time>, <player>.
+#  <prefix> selalu tersedia otomatis.
+# =====================================================================
 
-prefix: "<gradient:#ffb300:#ff5e00><bold>XP Roulette</bold></gradient> <dark_gray>»</dark_gray>"
+prefix: "<gradient:#7c3aed:#22d3ee><bold>Senzy</bold></gradient> <dark_gray>»</dark_gray> "
 
-# ---------- SAAT JOIN ----------
-join:
-  first:
-    - ""
-    - "<gradient:#ffd700:#ff8c00><bold>━━━ SELAMAT DATANG DI XP ROULETTE ━━━</bold></gradient>"
-    - "<gray>Tiap <yellow>{interval}</yellow>, roda takdir memberimu <gold>efek acak</gold> selama <green>{active}</green>."
-    - "<gray>Makin tinggi <green>level XP</green>-mu, makin dahsyat efeknya... <red>tapi risikonya juga!</red>"
-    - "<gray>Ketik <yellow>/xpr aturan</yellow> untuk aturan main, <yellow>/xpr help</yellow> untuk semua perintah."
-    - "<gray>Kamu bebas <green>ikut</green> atau <red>keluar</red> kapan saja: <yellow>/xpr join</yellow> / <yellow>/xpr leave</yellow>."
-    - ""
-  first-optin-hint: "{prefix} <yellow>Kamu belum ikut Roulette.</yellow> <gray>Ketik <green>/xpr join</green> kalau berani mencoba!"
-  back-off: "{prefix} <gray>Kamu sedang <red>tidak ikut</red> Roulette. Ketik <green>/xpr join</green> untuk ikut."
-  back-active: "{prefix} <green>Selamat datang kembali! Roulette-mu masih aktif <yellow>{time}</yellow> lagi."
-  back-cooldown: "{prefix} <gray>Roulette berikutnya aktif dalam <yellow>{time}</yellow>. Kumpulkan XP dulu!"
-  back-dead: "{prefix} <red>Roulette-mu hangus karena mati.</red> <gray>Aktif lagi dalam <yellow>{time}</yellow>."
+generic:
+  no-permission: "<prefix><red>Kamu tidak punya izin untuk itu."
+  players-only: "<prefix><red>Perintah ini hanya untuk pemain."
+  usage: "<prefix><yellow>Penggunaan: <white><usage>"
+  player-not-found: "<prefix><red>Pemain '<player>' tidak ditemukan / sedang offline."
+  invalid-number: "<prefix><red>'<value>' bukan angka yang valid."
+  reloaded: "<prefix><green>Konfigurasi, pesan, dan semua modul Senzy berhasil dimuat ulang."
 
-# ---------- SAAT RODA BERPUTAR ----------
-activation:
-  title: "<gradient:#ffd700:#ff8c00><bold>⚡ ROULETTE XP AKTIF! ⚡</bold></gradient>"
-  subtitle: "<gray>Level <green>{level}</green> <dark_gray>•</dark_gray> <yellow>{tier}</yellow> <dark_gray>•</dark_gray> Pengali <gold>x{multiplier}</gold>"
-  header: "<gradient:#ffd700:#ff8c00><bold>━━━━━━ RODA TAKDIR BERPUTAR ━━━━━━</bold></gradient>"
-  intros:
-    - "<yellow>Roda takdir berputar... tik... tik... tik... <gold><bold>BERHENTI!</bold>"
-    - "<aqua>Bintang-bintang berpihak padamu... atau mungkin tidak."
-    - "<light_purple>Sihir kuno bergemuruh di dalam levelmu!"
-    - "<gold>Dadu dilempar! Nasibmu ditentukan oleh XP-mu."
-    - "<green>Energi XP-mu meledak menjadi kekuatan!"
-    - "<yellow>Para dewa tambang menatapmu dan mengangguk pelan..."
-  info: "<gray>Level XP: <green>{level}</green> <dark_gray>|</dark_gray> Rank: <yellow>{tier}</yellow> <dark_gray>|</dark_gray> Pengali: <gold>x{multiplier}</gold>"
-  good-line: " <green>✔ <white>{effect}</white> <dark_gray>—</dark_gray> <gray><italic>{flavor}</italic>"
-  risk-line: " <red>✘ <white>{effect}</white> <dark_gray>—</dark_gray> <gray><italic>{flavor}</italic>"
-  no-risk: "<green>★ Dewi Fortuna tersenyum — kali ini TANPA risiko!"
-  risk-warnings:
-    - "<red>Tapi ingat: setiap kekuatan ada harganya. Jangan sampai mati!"
-    - "<red>Dunia memberi, roulette pun mengambil. Hati-hati!"
-    - "<dark_red>Ada bayaran untuk semua kekuatan ini... bertahanlah!"
-    - "<red>Mati = semua efek hangus. Mainkan dengan cerdas!"
-  footer: "<gray>Berlangsung selama <yellow>{duration}</yellow>. <dark_gray>Mati = hangus sampai putaran berikutnya.</dark_gray>"
+direction:
+  north: "Utara"
+  north-east: "Timur Laut"
+  east: "Timur"
+  south-east: "Tenggara"
+  south: "Selatan"
+  south-west: "Barat Daya"
+  west: "Barat"
+  north-west: "Barat Laut"
 
-# ---------- PESAN ACAK SAAT EFEK AKTIF (action bar) ----------
-flavor:
-  good:
-    - "<green>Kekuatan roulette mengalir deras di nadimu!"
-    - "<gold>Kamu sedang di puncak kejayaan. Manfaatkan waktunya!"
-    - "<aqua>Dunia terasa lebih kecil dari biasanya..."
-    - "<yellow>Waktunya berburu, menambang, atau menaklukkan sesuatu!"
-  risk:
-    - "<red>Efek buruk masih menempel... bertahanlah!"
-    - "<dark_red>Jangan sampai mati, bayarannya terlalu mahal!"
-    - "<gold>Kekuatan besar, risiko besar. Tetap waspada!"
-    - "<red>Ada yang menggerogotimu... tapi kamu pasti kuat!"
+rarity:
+  common: "<gray>Common"
+  rare: "<blue>Rare"
+  epic: "<light_purple>Epic"
+  legendary: "<gold><bold>Legendary</bold>"
 
-# ---------- KOMENTAR TIAP EFEK ----------
-effect-flavor-default:
-  good:
-    - "Anugerah dari roda takdir"
-    - "Keberuntungan berpihak padamu"
-    - "Kekuatan baru mengalir"
-  risk:
-    - "Harga dari sebuah kekuatan"
-    - "Roda takdir kadang kejam"
-    - "Ujian dari roda takdir"
-
-effect-flavor:
-  speed: "Angin pun iri padamu"
-  haste: "Tanganmu secepat kilat"
-  strength: "Otot bajamu menggelegar"
-  jump_boost: "Melompat setinggi awan"
-  regeneration: "Lukamu menutup sendiri"
-  resistance: "Kulitmu sekeras berlian"
-  fire_resistance: "Lava? Cuma air hangat"
-  water_breathing: "Kamu lahir untuk lautan"
-  night_vision: "Kegelapan tak berarti apa-apa"
-  invisibility: "Kamu bagai hantu"
-  health_boost: "Jantung ekstra, nyawa ekstra"
-  absorption: "Perisai emas melindungimu"
-  saturation: "Kenyang tanpa perlu makan"
-  luck: "Dewi fortuna di sisimu"
-  slow_falling: "Jatuh seringan bulu"
-  dolphins_grace: "Berenang bagai lumba-lumba"
-  conduit_power: "Kekuatan samudra bersamamu"
-  hero_of_the_village: "Penduduk desa menyanjungmu"
-  slowness: "Kakimu berat bagai batu"
-  mining_fatigue: "Tanganmu lemas tak bertenaga"
-  weakness: "Tenagamu terkuras habis"
-  poison: "Racun menggerogoti dari dalam"
-  wither: "Kematian mengintai perlahan"
-  hunger: "Perutmu keroncongan tanpa henti"
-  nausea: "Dunia berputar-putar"
-  blindness: "Semuanya gelap gulita"
-  darkness: "Kegelapan menelan sekelilingmu"
-  glowing: "Semua orang bisa melihatmu"
-  unluck: "Sial! Nasib buruk mengikutimu"
-  bad_omen: "Pertanda buruk... awas desa!"
-  weaving: "Jaring laba-laba menantimu saat ajal"
-  oozing: "Slime menantimu saat ajal"
-  infested: "Silverfish mengintai di kulitmu"
-  wind_charged: "Angin liar siap meledak"
-
-# ---------- NAMA RANK (berdasarkan tier, tier terakhir dipakai untuk seterusnya) ----------
-tier-names:
-  - "Pemula"
-  - "Petualang"
-  - "Pejuang"
-  - "Veteran"
-  - "Elit"
-  - "Legenda"
-  - "Mitos"
-  - "Dewa Tambang"
-
-# ---------- EFEK BERAKHIR ----------
-expire:
-  title: "<gold><bold>Roulette Berakhir</bold>"
-  subtitle: "<gray>Terima kasih atas kekuatannya!"
-  chat: "{prefix} <yellow>Efek Roulette habis.</yellow> <gray>Roda berputar lagi dalam <yellow>{time}</yellow>. Kumpulkan XP!"
-
-# ---------- MATI ----------
-death:
-  title: "<dark_red><bold>☠ ROULETTE HANGUS ☠</bold>"
-  subtitle: "<gray>Kamu mati... efek tidak diberikan lagi"
-  chat: "{prefix} <red>Kamu tewas saat Roulette aktif! Semua efek hangus.</red> <gray>Roda berputar lagi dalam <yellow>{time}</yellow>."
-  quips:
-    - "<gray>Roda takdir tertawa pelan di belakangmu..."
-    - "<gray>Kekuatan besar butuh kepala yang dingin. Lain kali lebih hati-hati!"
-    - "<gray>Setidaknya kamu mati dengan gaya."
-    - "<gray>Level XP-mu adalah taruhanmu. Selamat mencoba lagi!"
-
-# ---------- PENGUMUMAN SERVER ----------
-broadcast:
-  high: "{prefix} <gold>{player}</gold> <yellow>baru saja mendapat Roulette</yellow> <gradient:red:gold><bold>x{multiplier}</bold></gradient><yellow>! Semoga selamat...</yellow>"
-  death: "{prefix} <dark_red>☠</dark_red> <gold>{player}</gold> <gray>tewas saat memegang Roulette</gray> <red>x{multiplier}</red><gray>. Rest in peace.</gray>"
-
-# ---------- PERINGATAN & HITUNG MUNDUR ----------
-warn-end: "{prefix} <yellow>⚠ Efek Roulette habis dalam <gold>{time}</gold>!"
-warn-start: "{prefix} <aqua>Roda takdir berputar dalam <yellow>{time}</yellow>. Kumpulkan XP sekarang!"
-countdown:
-  title: "<gold><bold>{seconds}</bold>"
-  subtitle: "<gray>Roda takdir akan berputar..."
-
-# ---------- BOSSBAR ----------
-bossbar:
-  active: "<green>⚡ Roulette <gold>x{multiplier}</gold> <gray>•</gray> <white>{time}</white>"
-  active-risk: "<red>⚡ Roulette <gold>x{multiplier}</gold> <gray>•</gray> <white>{time}</white> <dark_gray>(ada risiko!)</dark_gray>"
-  cooldown: "<aqua>Roulette berikutnya <gray>•</gray> <white>{time}</white>"
-  dead: "<dark_red>☠ Hangus <gray>•</gray> <white>{time}</white> <dark_gray>sampai putaran berikutnya</dark_gray>"
-
-# ---------- /xpr status ----------
-status:
-  header: "<gradient:#ffd700:#ff8c00><bold>━━━ STATUS XP ROULETTE ━━━</bold></gradient>"
-  level: "<gray>Level XP: <green>{level}</green> <dark_gray>•</dark_gray> Rank: <yellow>{tier}</yellow> <dark_gray>•</dark_gray> Pengali sekarang: <gold>x{multiplier}</gold>"
-  active: "<green>● AKTIF</green> <gray>— sisa <yellow>{time}</yellow> (pengali <gold>x{multiplier}</gold>, dari level {level})"
-  cooldown: "<yellow>● COOLDOWN</yellow> <gray>— aktif lagi dalam <yellow>{time}</yellow>"
-  dead: "<red>● HANGUS (kamu mati)</red> <gray>— aktif lagi dalam <yellow>{time}</yellow>"
-  good-line: "  <green>✔ {effect}"
-  risk-line: "  <red>✘ {effect}"
-  next: "<gray>Naik <green>{levels}</green> level lagi untuk pengali <gold>x{multiplier}</gold>!"
-  help-hint: "<dark_gray>Ketik /xpr help untuk semua perintah."
-  part:
-    on-forever: "<gray>Partisipasi: <green>IKUT</green> <dark_gray>(permanen)</dark_gray>"
-    off-forever: "<gray>Partisipasi: <red>TIDAK IKUT</red> <dark_gray>(permanen) — ketik</dark_gray> <yellow>/xpr join</yellow>"
-    on-time: "<gray>Partisipasi: <green>IKUT sementara</green> <dark_gray>— berhenti otomatis dalam</dark_gray> <yellow>{time}</yellow>"
-    off-time: "<gray>Partisipasi: <red>LIBUR sementara</red> <dark_gray>— ikut lagi otomatis dalam</dark_gray> <yellow>{time}</yellow>"
-    on-rounds: "<gray>Partisipasi: <green>IKUT sementara</green> <dark_gray>— sisa</dark_gray> <yellow>{rounds} round</yellow>"
-    on-rounds-last: "<gray>Partisipasi: <green>IKUT sementara</green> <dark_gray>— berhenti di putaran berikutnya</dark_gray>"
-    off-rounds: "<gray>Partisipasi: <red>LIBUR sementara</red> <dark_gray>— lewati</dark_gray> <yellow>{rounds} round</yellow> <dark_gray>lagi</dark_gray>"
-    off-rounds-last: "<gray>Partisipasi: <red>LIBUR sementara</red> <dark_gray>— ikut lagi di putaran berikutnya</dark_gray>"
-
-# ---------- /xpr preview ----------
-preview:
-  header: "<gradient:#ffd700:#ff8c00><bold>━━━ PRATINJAU PENGALI ━━━</bold></gradient>"
-  line: "<gray>Level <green>{level}</green> → pengali <gold>x{multiplier}</gold> <dark_gray>•</dark_gray> efek positif <green>{good}</green> <dark_gray>•</dark_gray> peluang risiko <red>{chance}%</red>"
-
-# ---------- ATURAN MAIN (/xpr aturan) ----------
-rules:
-  lines:
-    - "<gradient:#ffd700:#ff8c00><bold>━━━━━━ ATURAN MAIN XP ROULETTE ━━━━━━</bold></gradient>"
-    - "<yellow>1.</yellow> <gray>Tiap <white>{interval}</white>, roda takdir berputar dan memberimu efek <gold>acak</gold> selama <green>{active}</green>."
-    - "<yellow>2.</yellow> <gray>Efek dipilih berdasarkan <green>level XP</green>-mu <white>saat roda berputar</white>."
-    - "<yellow>3.</yellow> <gray>Level <white>0-{first_end}</white> = semua efek <white>x1</white>. Tiap naik <white>{per_tier} level</white>, kekuatan efek naik: <gold>{ladder}</gold>"
-    - "<yellow>4.</yellow> <gray>Makin tinggi level, makin banyak efek positif... tapi <red>risiko</red> (Poison, Weakness, Wither, dll) juga makin sering dan kuat!"
-    - "<yellow>5.</yellow> <gray>Jika kamu <red>MATI</red> saat efek aktif, efek <red>hangus</red> dan tidak diberikan lagi. Sisa siklus jadi <yellow>cooldown</yellow>."
-    - "<yellow>6.</yellow> <gray>Setelah efek habis ada <yellow>{cooldown}</yellow> cooldown sebelum putaran berikutnya. Waktu hanya berjalan saat kamu <white>online</white>."
-    - "<yellow>7.</yellow> <gray>Susu dan totem <red>tidak bisa</red> menghapus efek Roulette. Roda takdir tidak bisa dicurangi!"
-    - "<yellow>8.</yellow> <gray>Ikut itu <white>pilihan</white>! Kamu bisa ikut/keluar <white>selamanya</white>, atau <white>sementara</white> (per durasi atau per round). Lihat <yellow>/xpr help</yellow>."
-    - "<gray>Perintah: <yellow>/xpr status</yellow> <dark_gray>•</dark_gray> <yellow>/xpr aturan</yellow> <dark_gray>•</dark_gray> <yellow>/xpr preview [level]</yellow>"
-
-# ---------- PERINTAH ----------
-cmd:
-  usage: "{prefix} <gray>Gunakan: <yellow>/xpr [status|join|leave|aturan|preview|loot|help]</yellow> <dark_gray>— ketik /xpr help</dark_gray>"
-  usage-admin: "{prefix} <gray>Admin: <yellow>/xpr [reload|force|reset] [pemain]</yellow> <dark_gray>•</dark_gray> <yellow>/xpr loot [start|stop|reload|locations]</yellow>"
-  no-permission: "{prefix} <red>Kamu tidak punya izin untuk itu."
-  players-only: "{prefix} <red>Perintah ini hanya untuk pemain."
-  player-not-found: "{prefix} <red>Pemain tidak ditemukan / tidak online."
-  reloaded: "{prefix} <green>Konfigurasi dan pesan berhasil dimuat ulang."
-  forced: "{prefix} <green>Roda takdir dipaksa berputar untuk <gold>{player}</gold>."
-  reset: "{prefix} <green>Data Roulette <gold>{player}</gold> direset."
-  invalid-number: "{prefix} <red>Angka level tidak valid."
-  invalid-duration: "{prefix} <red>Format tidak valid.</red> <gray>Contoh: <yellow>30m</yellow>, <yellow>2h</yellow>, <yellow>1d</yellow>, <yellow>3r</yellow> (3 round), <yellow>forever</yellow>. Maks <white>{max_days}</white> hari / <white>{max_rounds}</white> round."
-  force-not-participating: "{prefix} <red>{player}</red> <gray>sedang tidak ikut Roulette, jadi tidak bisa dipaksa."
-
-# ---------- IKUT / KELUAR (/xpr join, /xpr leave) ----------
-participation:
-  join-forever: "{prefix} <green>Kamu sekarang IKUT Roulette secara permanen!</green> <gray>Roda berikutnya berputar dalam <yellow>{time}</yellow>."
-  join-time: "{prefix} <green>Kamu IKUT Roulette selama</green> <yellow>{duration}</yellow><green>.</green> <gray>Setelah itu kamu otomatis keluar. Roda berikutnya dalam <yellow>{time}</yellow>."
-  join-rounds: "{prefix} <green>Kamu IKUT Roulette untuk</green> <yellow>{rounds} round</yellow><green>.</green> <gray>Setelah itu kamu otomatis keluar. Roda berikutnya dalam <yellow>{time}</yellow>."
-  leave-forever: "{prefix} <red>Kamu keluar dari Roulette secara permanen.</red> <gray>Ketik <yellow>/xpr join</yellow> kalau berubah pikiran. Efek yang sedang aktif dicabut."
-  leave-time: "{prefix} <red>Kamu libur dari Roulette selama</red> <yellow>{duration}</yellow><red>.</red> <gray>Setelah itu kamu otomatis ikut lagi. Efek yang sedang aktif dicabut."
-  leave-rounds: "{prefix} <red>Kamu melewati</red> <yellow>{rounds} round</yellow> <red>Roulette.</red> <gray>Setelah itu kamu otomatis ikut lagi. Efek yang sedang aktif dicabut."
-  already-permanent-on: "{prefix} <gray>Kamu memang sudah <green>ikut secara permanen</green>. Pengaturan libur sementara dibatalkan."
-  already-permanent-off: "{prefix} <gray>Kamu memang sudah <red>tidak ikut secara permanen</red>. Pengaturan ikut sementara dibatalkan."
-  leave-disabled: "{prefix} <red>Server ini mewajibkan semua pemain ikut Roulette.</red> <gray>Kamu tidak bisa keluar."
-  auto-off: "{prefix} <yellow>Masa ikut sementaramu berakhir.</yellow> <gray>Kamu keluar dari Roulette. Ketik <green>/xpr join</green> untuk ikut lagi."
-  auto-on: "{prefix} <green>Masa liburmu selesai!</green> <gray>Kamu kembali ikut Roulette. Roda berikutnya dalam <yellow>{time}</yellow>."
-
-# ---------- BANTUAN (/xpr help) ----------
 help:
-  lines:
-    - "<gradient:#ffd700:#ff8c00><bold>━━━━━━ BANTUAN XP ROULETTE ━━━━━━</bold></gradient>"
-    - "<yellow>/xpr</yellow> <dark_gray>atau</dark_gray> <yellow>/xpr status</yellow> <dark_gray>—</dark_gray> <gray>status, efek aktif, dan sisa waktu"
-    - "<yellow>/xpr aturan</yellow> <dark_gray>—</dark_gray> <gray>aturan main lengkap"
-    - "<yellow>/xpr preview [level]</yellow> <dark_gray>—</dark_gray> <gray>lihat pengali di level tertentu"
-    - "<gold>/xpr loot</gold> <dark_gray>—</dark_gray> <gray>status Loot Box Event (waktu tersisa, box tersedia)"
-    - "<green>/xpr join</green> <dark_gray>—</dark_gray> <gray>ikut Roulette <white>selamanya</white>"
-    - "<green>/xpr join [durasi|round]</green> <dark_gray>—</dark_gray> <gray>ikut <white>sementara</white>, lalu otomatis keluar"
-    - "<red>/xpr leave</red> <dark_gray>—</dark_gray> <gray>keluar dari Roulette <white>selamanya</white>"
-    - "<red>/xpr leave [durasi|round]</red> <dark_gray>—</dark_gray> <gray>libur <white>sementara</white>, lalu otomatis ikut lagi"
-    - "<gold>Format:</gold> <yellow>30m</yellow> <gray>(menit)</gray> <yellow>2h</yellow> <gray>(jam)</gray> <yellow>1d</yellow> <gray>(hari)</gray> <yellow>3r</yellow> <gray>(3 round)</gray> <yellow>forever</yellow> <gray>(selamanya)</gray>"
-    - "<gold>Contoh:</gold> <yellow>/xpr join 2h</yellow> <dark_gray>•</dark_gray> <yellow>/xpr join 5 round</yellow> <dark_gray>•</dark_gray> <yellow>/xpr leave 1d</yellow> <dark_gray>•</dark_gray> <yellow>/xpr leave forever</yellow>"
-    - "<gray>Maksimal <white>{max_days}</white> hari atau <white>{max_rounds}</white> round. Durasi waktu dihitung waktu nyata, <white>1 round</white> = 1 putaran roda (hanya berjalan saat online)."
-    - "<gray>Libur tidak menghapus cooldown: roda tetap berputar di jadwalnya, jadi tidak bisa dipakai untuk curang."
-  admin-lines:
-    - "<dark_gray>— Admin —"
-    - "<yellow>/xpr reload</yellow> <dark_gray>—</dark_gray> <gray>muat ulang config.yml & messages.yml"
-    - "<yellow>/xpr force [pemain]</yellow> <dark_gray>—</dark_gray> <gray>paksa roda berputar sekarang (untuk tes)"
-    - "<yellow>/xpr reset [pemain]</yellow> <dark_gray>—</dark_gray> <gray>reset data ke pengaturan awal"
+  main:
+    - "<prefix><yellow><bold>Daftar Perintah</bold>"
+    - "<gray> <white>/senzy xpr <gray>- Sistem Boost Progression (XPR)"
+    - "<gray> <white>/senzy lootbox <gray>- Event LootBox"
+    - "<gray> <white>/senzy reload <gray>- Muat ulang config & pesan"
+  xpr:
+    - "<prefix><yellow><bold>Perintah XPR</bold>"
+    - "<gray> <white>/senzy xpr status <gray>- Boost aktif & ringkasan"
+    - "<gray> <white>/senzy xpr boosts <gray>- Daftar semua boost & progresmu"
+    - "<gray> <white>/senzy xpr info <boost> <gray>- Detail satu boost"
+    - "<gray> <white>/senzy xpr upgrade <boost> <gray>- Buka tier berikutnya (jika sudah siap)"
+    - "<gray> <white>/senzy xpr roll <gray>- Putar roulette boost"
+    - "<gray> <white>/senzy xpr activate <boost> <gray>- Aktifkan boost yang kamu punya"
+    - "<gray> <white>/senzy xpr gui <gray>- Buka menu XPR"
+  lootbox:
+    - "<prefix><yellow><bold>Perintah LootBox</bold>"
+    - "<gray> <white>/senzy lootbox status <gray>- Status event saat ini"
+    - "<gray> <white>/senzy lootbox locate <gray>- Cari LootBox terdekat"
+    - "<gray> <white>/senzy lootbox gui <gray>- Buka menu LootBox"
 
-# ==================================================================
-#  LOOT BOX EVENT
-#  Placeholder: {player} {loot_id} {rarity} {world} {x} {y} {z} {remaining} {duration}
-#               {count} {total} {opened} {radius} {event_id} {n} {item} {state}
-# ==================================================================
-lootbox:
-  # Event dimulai, lokasi sedang dicari
-  starting: "<gold><bold>[LOOT BOX]</bold></gold> <yellow>Event dimulai!</yellow> <gray><white>{player}</white> menjadi pusat area. Menyebar <white>{count}</white> Loot Box..."
-  # Semua box sudah terpasang
-  spawned: "<gold><bold>[LOOT BOX]</bold></gold> <white>{count}</white> <yellow>Loot Box</yellow> <gray>muncul dalam radius <white>{radius}</white> block dari <white>{player}</white>! Buka dengan <yellow>klik kanan</yellow>. Waktu: <white>{duration}</white>"
-  # Hanya dikirim jika announcement.reveal-coordinates: true
-  spawned-box: "<gold><bold>[LOOT BOX]</bold></gold> <gray>#{n} <dark_gray>»</dark_gray> <white>{world} {x} {y} {z}</white>"
-  # Broadcast saat rarity dengan announcement: true dibuka (selain legendary)
-  found: "<gold><bold>[LOOT BOX]</bold></gold> <white>{player}</white> <gray>menemukan Loot Box</gray> {rarity}<gray>!</gray>"
-  legendary: "<gold><bold>[LOOT BOX]</bold></gold> <white>{player}</white> <gray>menemukan</gray> {rarity} <gold><bold>Loot Box</bold></gold><gray>!!</gray> <yellow>✦</yellow>"
-  # Pesan pribadi ke pemain yang membuka
-  opened: "<gold><bold>[LOOT BOX]</bold></gold> <gray>Kamu membuka Loot Box</gray> {rarity} <dark_gray>(<white>{loot_id}</white>)</dark_gray><gray>. Isinya:</gray>"
-  opened-item: "  <dark_gray>•</dark_gray> <white>{item}</white>"
-  expired: "<gold><bold>[LOOT BOX]</bold></gold> <gray>Waktu event habis. <white>{count}</white> Loot Box yang tidak sempat dibuka telah hilang.</gray>"
-  all-opened: "<gold><bold>[LOOT BOX]</bold></gold> <green>Semua Loot Box sudah dibuka!</green> <gray>Event selesai.</gray>"
-  stopped: "<gold><bold>[LOOT BOX]</bold></gold> <gray>Event dihentikan oleh admin. <white>{count}</white> Loot Box dihapus.</gray>"
-  cancelled: "<gold><bold>[LOOT BOX]</bold></gold> <gray>Event dibatalkan karena tidak cukup lokasi yang aman. Akan dicoba lagi nanti.</gray>"
-  no-player: "<gold><bold>[LOOT BOX]</bold></gold> <red>Tidak ada pemain online yang memenuhi syarat untuk jadi pusat event.</red>"
-  cooldown: "<gold><bold>[LOOT BOX]</bold></gold> <gray>Event sedang cooldown. Berikutnya bisa dimulai dalam <white>{remaining}</white>.</gray>"
-  # Dikirim ke admin (dan console) jika sebagian box gagal mendapat lokasi valid
-  invalid-location: "<gold><bold>[LOOT BOX]</bold></gold> <red>{count} dari {total} Loot Box gagal mendapat lokasi yang valid</red> <dark_gray>({event_id})</dark_gray>"
-  not-active: "<gold><bold>[LOOT BOX]</bold></gold> <red>Tidak ada Loot Box Event yang sedang aktif.</red>"
-  already-opened: "<gold><bold>[LOOT BOX]</bold></gold> <red>Loot Box ini sudah dibuka pemain lain.</red>"
-  break-hint: "<gold><bold>[LOOT BOX]</bold></gold> <gray>Loot Box tidak bisa dihancurkan. Buka dengan <yellow>klik kanan</yellow>.</gray>"
-  bossbar: "<gold><bold>Loot Box Event</bold></gold> <dark_gray>•</dark_gray> <white>{count}</white> <gray>Loot Box masih tersedia</gray> <dark_gray>•</dark_gray> <gray>Waktu tersisa:</gray> <white>{remaining}</white>"
+# =====================================================================
+#  XPR
+# =====================================================================
+xpr:
+  disabled: "<prefix><red>Sistem XPR sedang dimatikan."
+  unknown-boost: "<prefix><red>Boost '<boost>' tidak dikenal."
 
   status:
-    header: "<gradient:#ffd700:#ff8c00><bold>━━━━ Loot Box Event ━━━━</bold></gradient>"
-    state: "<gray>Status: <white>{state}</white>"
-    remaining: "<gray>Waktu tersisa: <white>{remaining}</white>"
-    boxes: "<gray>Loot Box: <white>{count}/{total}</white> tersedia"
-    opened: "<gray>Loot Box dibuka: <white>{opened}</white>"
-    highest: "<gray>Rarity tertinggi: {rarity}"
-    event-id: "<gray>Event ID: <white>{event_id}</white>"
-    idle: "<gray>Menunggu event berikutnya (percobaan berikutnya dalam <white>{remaining}</white>)."
+    header: "<prefix><white>Boost dimiliki: <yellow><owned></yellow>/<total>"
+    active: "<prefix><green>Sedang aktif: <boost> <gray>(sisa <time>)"
+    no-active: "<prefix><gray>Tidak ada boost yang sedang aktif."
+
+  boosts:
+    header: "<prefix><yellow><bold>Daftar Boost</bold>"
+    line: "<gray> <boost> <white>- Tier <tier> Level <level>/<max>"
+    locked-line: "<gray> <boost> <dark_gray>- belum dimiliki"
+
+  info:
+    locked: "<prefix><gray>Kamu belum memiliki <boost><gray>. Putar roulette untuk mendapatkannya."
+    line: "<prefix><boost> <gray>Tier <tier> Level <level>/<max><newline><gray>  Durasi: <white><duration> <gray> Cooldown: <white><cooldown><newline><gray>  Efek samping: <white><side_effect>"
+
+  roll:
+    no-boosts: "<prefix><red>Belum ada boost yang dikonfigurasi."
+    cooldown: "<prefix><yellow>Tunggu <time> lagi sebelum roll berikutnya."
+    all-maxed: "<prefix><gold>Semua boost sudah mencapai tier & level maksimum!"
+    not-enough-xp: "<prefix><red>Butuh <cost> level XP (kamu punya <levels>)."
+    sound: "entity.experience_orb.pickup"
+    unlocked: "<prefix><green>Kamu mendapatkan boost baru: <bold><boost></bold> <gray>(Tier <tier> Level <level>/<max>)"
+    level-up: "<prefix><green><boost> <white>naik ke Level <level>/<max> <gray>(Tier <tier>)"
+    tier-advanced: "<prefix><gold><bold>Tier Naik!</bold> <white><boost> <gray>Tier <old_tier> ➜ Tier <tier> <gray>(Level <level>/<max>)"
+    tier-ready: "<prefix><gold><boost> <white>sudah mencapai Level maksimum! <yellow>Buka menu konfirmasi untuk lanjut ke Tier <next>."
+    mastered-ready: "<prefix><aqua><boost> <white>MASTERED di Tier <tier><gray>! Tier <next> menunggu untuk dibuka."
+    mastered-final: "<prefix><aqua><bold><boost> STABLE</bold> <gray>- sudah mencapai tier tertinggi."
+
+  activate:
+    not-owned: "<prefix><red>Kamu belum memiliki boost <boost>."
+    already-active: "<prefix><yellow>Boost <boost> masih aktif <gray>(sisa <time>)."
+    on-cooldown: "<prefix><yellow><boost> masih cooldown <gray>(sisa <time>)."
+    ok: "<prefix><green><boost> diaktifkan! <gray>Tier <tier> Level <level> <gray>- durasi <white><duration>"
+    side-effect: "<prefix><gray>Efek samping: <white><side_effect>"
+
+  upgrade:
+    not-owned: "<prefix><red>Kamu belum memiliki boost <boost>."
+    max-tier: "<prefix><gold><boost> sudah di tier tertinggi dan level maksimum."
+    not-ready: "<prefix><yellow><boost> belum siap naik tier <gray>(Level <level>/<max>)."
+    ok: "<prefix><gold><bold>Tier Terbuka!</bold> <white><boost> <gray>Tier <old_tier> ➜ Tier <tier> <gray>(Level <level>/<max>)"
+
+  ended:
+    death: "<prefix><red><boost> berakhir karena kamu tewas. <gray>Cooldown: <white><cooldown>"
+    expired: "<prefix><gray><boost> telah berakhir. <gray>Cooldown: <white><cooldown>"
+
+  welcome-back-active: "<prefix><green>Boost <boost> masih aktif <gray>(sisa <time>)."
+
+  admin:
+    grant-ok: "<prefix><green>Memberi hasil roll <boost> ke <player>."
+    reset-ok: "<prefix><green>Data XPR milik <player> telah direset."
+
+# =====================================================================
+#  LOOTBOX
+# =====================================================================
+lootbox:
+  disabled: "<prefix><red>Event LootBox sedang dimatikan."
+
+  hologram:
+    lines:
+      - "<gold><bold>[ LOOTBOX ]</bold>"
+      - "<rarity>"
+
+  status:
+    active-line: "<prefix><green>Event aktif <gray>- <opened>/<total> terbuka <gray>- sisa <white><time>"
+    inactive-line: "<prefix><gray>Tidak ada event LootBox yang berjalan."
+
+  locate:
+    inactive: "<prefix><gray>Tidak ada event LootBox yang berjalan."
+    none: "<prefix><gray>Tidak ada LootBox aktif yang tersisa."
+    found: "<prefix><rarity> <white>LootBox <gray>- <white><distance> blok <gray>ke arah <white><direction>"
+    found-coords: "<prefix><rarity> <white>LootBox <gray>- <white><distance> blok <gray>ke arah <white><direction> <gray>(<x>, <y>, <z>)"
+
+  open:
+    inactive: "<prefix><red>LootBox ini sudah tidak berlaku."
+    already: "<prefix><red>LootBox ini sudah dibuka."
+    no-permission: "<prefix><red>Kamu tidak punya izin membuka LootBox."
+    success: "<prefix><rarity> <white>LootBox terbuka!"
+    rewards: "<prefix><gray>Kamu mendapatkan: <white><items>"
+    nothing: "tidak ada apa-apa"
+
+  announce:
+    common: "<prefix><gray><player> membuka LootBox <rarity><gray>."
+    rare: "<prefix><blue><player> membuka LootBox <rarity><blue>!"
+    epic: "<prefix><light_purple><bold><player></bold> membuka LootBox <rarity><light_purple>!"
+    legendary: "<prefix><gold><bold><player> membuka LootBox <rarity></bold><gold>!!! Selamat!"
+
+  broadcast:
+    start: "<prefix><gold><bold>Event LootBox dimulai!</bold> <white><count> LootBox tersebar di peta <gray>- selama <white><duration>"
+    hint: "<prefix><yellow>Gunakan <white>/senzy lootbox locate <yellow>untuk mencari LootBox terdekat!"
+    coords: "<prefix><rarity> <white>LootBox <gray>muncul di <white><world> (<x>, <y>, <z>)"
+
+  ended:
+    timeout: "<prefix><gray>Event LootBox berakhir <gray>- <white><opened>/<total> <gray>terbuka."
+    all-opened: "<prefix><gold>Semua LootBox telah dibuka! Event selesai."
+    stopped: "<prefix><yellow>Event LootBox dihentikan oleh admin <gray>- <white><opened>/<total> <gray>terbuka."
+    reset: "<prefix><yellow>Event LootBox direset."
+
+  bossbar:
+    title: "<yellow><bold>LootBox</bold> <white><left>/<total> tersisa <gray>- <white><time>"
+
+  admin:
+    already-active: "<prefix><yellow>Event LootBox sudah berjalan."
+    already-starting: "<prefix><yellow>Sedang mencari lokasi, tunggu sebentar."
+    not-active: "<prefix><gray>Tidak ada event LootBox yang berjalan."
+    world-missing: "<prefix><red>World '<world>' tidak ditemukan."
+    searching: "<prefix><yellow>Mencari <amount> lokasi LootBox yang valid..."
+    start-failed: "<prefix><red>Hanya <found> lokasi valid ditemukan (minimum <minimum>). Event dibatalkan, coba perlebar area."
+    started: "<prefix><green>Event LootBox dimulai dengan <count>/<amount> LootBox."
+    stopped: "<prefix><green>Event LootBox dihentikan."
+    reset: "<prefix><green>Event LootBox direset."
+    anchor-set: "<prefix><green>Titik acuan diatur ke <world> (<x>, <y>, <z>)."
+    radius-set: "<prefix><green>Radius diatur ke <radius> blok."
+    area-reset: "<prefix><green>Area LootBox dikembalikan ke pengaturan config.yml."
+    area-info: "<prefix><white>World: <world> <gray>Mode: <mode> <gray>Center: (<x>, <y>, <z>) <gray>Radius: <radius>"
+
+# =====================================================================
+#  GUI - XPR
+# =====================================================================
+gui:
+  xpr:
+    title: "<dark_purple><bold>Senzy XPR</bold>"
+    close:
+      name: "<red>Tutup"
+    info:
+      name: "<white><bold>Informasi</bold>"
+      lore:
+        - "<gray>Boost dimiliki: <yellow><owned></yellow>/<total>"
+        - " "
+        - "<gray>Klik boost untuk mengaktifkan."
+        - "<gray>Boost di Level maksimum bisa"
+        - "<gray>membuka tier berikutnya."
+    roll:
+      name: "<green><bold>Putar Roulette</bold>"
+      lore:
+        - "<gray>Biaya: <yellow><cost> level XP"
+        - "<gray>Level kamu sekarang: <white><levels>"
+        - " "
+        - "<yellow>Klik untuk memutar!"
+    locked:
+      name: "<dark_gray>??? <gray>(Terkunci)"
+      lore:
+        - "<dark_gray>Belum kamu miliki."
+        - "<dark_gray>Dapatkan lewat Roll."
+    boost:
+      name: "<boost> <gray>[Tier <tier>]"
+      lore:
+        - "<gray>Level <level>/<max> <mastered>"
+        - "<white><progress>"
+        - " "
+        - "<gray>Durasi: <white><duration>"
+        - "<gray>Cooldown: <white><cooldown>"
+        - "<gray>Efek samping: <white><side_effect>"
+        - " "
+        - "<status>"
+        - "<next>"
+    status:
+      active: "<green>● Aktif <gray>(sisa <time>)"
+      cooldown: "<red>● Cooldown <gray>(sisa <time>)"
+      ready: "<yellow>● Siap dipakai - klik untuk aktifkan"
+    next:
+      tier: "<gray><left> level lagi ke Tier <next>"
+      pending: "<gold>Siap membuka Tier <next>! Klik untuk konfirmasi."
+      max-level: "<gray><left> level lagi ke Level maksimum"
+      max: "<aqua>Tier tertinggi tercapai!"
+    mastered: "<gold>★"
+    bar:
+      full: "<green>■"
+      empty: "<gray>■"
+    none: "Tidak ada"
+
+  confirm:
+    title: "<gold><bold>Buka Tier Berikutnya?</bold>"
+    unlock:
+      name: "<green><bold>BUKA TIER <next></bold>"
+      lore:
+        - "<gray><boost> akan naik dari"
+        - "<gray>Tier <tier> ke Tier <next>"
+        - "<gray>dan kembali ke Level 1."
+    info:
+      name: "<white><boost>"
+      lore:
+        - "<gray>Kamu telah MASTERED Tier <tier>"
+        - "<gray>(Level <max>/<max>)."
+    cancel:
+      name: "<red><bold>NANTI SAJA</bold>"
+
+  # ---------------------------------------------------------------
+  #  GUI - LootBox
+  # ---------------------------------------------------------------
+  lootbox:
+    title: "<dark_aqua><bold>Senzy LootBox</bold>"
+    status:
+      active: "<green>Aktif"
+      inactive: "<gray>Tidak Aktif"
+      name: "<white><bold>Status Event</bold>"
+      lore:
+        - "<gray>Status: <status>"
+        - "<gray>Sisa waktu: <white><time>"
+        - "<gray>Terbuka: <yellow><opened></yellow>/<total>"
+        - "<gray>Tersisa: <white><left>"
+    area:
+      name: "<white><bold>Area Spawn</bold>"
+      lore:
+        - "<gray>World: <white><world>"
+        - "<gray>Mode: <white><mode>"
+        - "<gray>Center: <white>(<x>, <y>, <z>)"
+        - "<gray>Radius: <white><radius>"
+    rates:
+      name: "<white><bold>Peluang Rarity</bold>"
+      lore:
+        - "<gray>Common: <white><common>%"
+        - "<blue>Rare: <white><rare>%"
+        - "<light_purple>Epic: <white><epic>%"
+        - "<gold>Legendary: <white><legendary>%"
+    rules:
+      name: "<white><bold>Aturan</bold>"
+      lore:
+        - "<gray>- LootBox tidak bisa dibuka dua kali"
+        - "<gray>- Jangan merusak beacon / penanda"
+        - "<gray>- Gunakan /senzy lootbox locate"
+        - "<gray>  untuk mencari LootBox terdekat"
+    locations:
+      name: "<yellow><bold>Kelola Lokasi</bold>"
+      lore:
+        - "<gray>Klik untuk membuka menu area spawn."
+    start:
+      name: "<green><bold>Mulai Event</bold>"
+      lore:
+        - "<gray>Mencari lokasi & memulai session baru."
+    stop:
+      name: "<red><bold>Hentikan Event</bold>"
+      lore:
+        - "<gray>Menghentikan session yang sedang berjalan."
 
   locations:
-    header: "<gradient:#ffd700:#ff8c00><bold>━━ Lokasi Loot Box</bold></gradient> <dark_gray>({event_id})</dark_gray>"
-    line: "<gray>#{n} {rarity} <dark_gray>»</dark_gray> <white>{world} {x} {y} {z}</white> <dark_gray>({loot_id})</dark_gray>"
-    line-opened: "<dark_gray>#{n} <strikethrough>{loot_id}</strikethrough> » sudah dibuka oleh {player}</dark_gray>"
-
-  cmd:
-    usage: "{prefix} <gray>Gunakan: <yellow>/xpr loot status</yellow>"
-    usage-admin: "{prefix} <gray>Admin: <yellow>/xpr loot [start [pemain] [force]|stop|reload|locations]</yellow>"
-    started: "{prefix} <green>Loot Box Event dimulai.</green> <gray>Lokasi sedang dicari...</gray>"
-    stopped: "{prefix} <green>Loot Box Event dihentikan.</green>"
-    reloaded: "{prefix} <green>lootbox.yml dan events.yml dimuat ulang.</green>"
-    not-running: "{prefix} <red>Tidak ada Loot Box Event yang sedang berjalan.</red>"
-    already-running: "{prefix} <red>Loot Box Event sedang berjalan.</red>"
-    disabled: "{prefix} <red>Loot Box Event dinonaktifkan di lootbox.yml (event.enabled).</red>"
-    blocked: "{prefix} <red>Tidak bisa dimulai: ada event lain yang sedang berjalan / cooldown.</red>"
-    invalid-world: "{prefix} <red>Dunia pemain itu tidak diizinkan (spawn.allowed-worlds / Nether).</red>"
-    not-ready: "{prefix} <red>Event belum siap dimulai.</red>"
+    title: "<dark_aqua><bold>Senzy LootBox - Lokasi</bold>"
+    world:
+      name: "<white><bold>World</bold>"
+      lore:
+        - "<gray><world>"
+    center:
+      name: "<white><bold>Center</bold>"
+      lore:
+        - "<gray>(<x>, <y>, <z>)"
+    radius:
+      name: "<white><bold>Radius</bold>"
+      lore:
+        - "<gray><radius> blok"
+        - " "
+        - "<yellow>Klik kiri: +10  <gray>|  <yellow>Klik kanan: -10"
+    mode:
+      name: "<white><bold>Mode</bold>"
+      lore:
+        - "<gray><mode>"
+        - " "
+        - "<yellow>Klik untuk beralih mode"
+    active:
+      name: "<white><bold>LootBox Aktif</bold>"
+      lore:
+        - "<gray><count>/<total> belum dibuka"
+    set:
+      name: "<green><bold>Set Anchor di Sini</bold>"
+      lore:
+        - "<gray>Memakai posisi kamu sekarang"
+        - "<gray>sebagai titik pusat (mode POINT)."
+    reset:
+      name: "<red><bold>Reset ke config.yml</bold>"
+      lore:
+        - "<gray>Menghapus semua penyesuaian admin."
+    back:
+      name: "<gray>« Kembali"

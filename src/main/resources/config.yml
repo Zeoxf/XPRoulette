@@ -1,110 +1,298 @@
-# ============================================================
-#  XP ROULETTE - konfigurasi utama
-# ============================================================
+# =====================================================================
+#  SENZY - config.yml
+#  Semua angka gameplay ada di sini. Teks pemain ada di messages.yml.
+#  Setelah mengubah file ini, jalankan /senzy reload.
+# =====================================================================
 
-# ---------- SIASAT WAKTU ----------
-# Waktu HANYA berjalan saat pemain online.
-cycle:
-  # Panjang 1 siklus (menit). Default: tiap 30 menit roda takdir berputar.
-  interval-minutes: 30
-  # Lama efek aktif di awal siklus (menit). Sisanya (30 - 15 = 15 menit) = cooldown.
-  # Jika pemain MATI saat efek aktif, efek hangus dan sisa siklus jadi cooldown.
-  active-minutes: 15
-  # Pemain baru: roda pertama berputar setelah sekian detik sejak pertama kali join.
-  first-join-delay-seconds: 60
+debug:
+  enabled: false
 
-# ---------- PARTISIPASI (IKUT / TIDAK IKUT) ----------
-# Pemain bisa memilih sendiri lewat /xpr join dan /xpr leave.
-participation:
-  # true  = pemain baru otomatis ikut (bisa keluar dengan /xpr leave)
-  # false = pemain baru TIDAK ikut sampai mengetik /xpr join
-  default-opt-in: true
-  # false = pemain tidak boleh keluar (/xpr leave dimatikan)
-  allow-leave: true
-  # Batas maksimal untuk /xpr join|leave [durasi] dan [jumlah round]
-  max-duration-days: 365
-  max-rounds: 1000
+data:
+  # Seberapa sering data pemain disimpan otomatis (selain otomatis tersimpan setiap perubahan penting).
+  autosave-interval: "5m"
 
-# ---------- PENGALI (BERDASARKAN LEVEL XP) ----------
-scaling:
-  # Setiap naik sekian level = naik 1 tier.
-  levels-per-tier: 5
-  # DOUBLE = dikali 2 tiap tier  -> x1, x2, x4, x8, x16, ...   (level 0-4 = x1, 5-9 = x2, 10-14 = x4, ...)
-  # LINEAR = ditambah linear-step -> x1, x2, x3, x4, ...       (kalau DOUBLE terasa terlalu gila)
-  mode: DOUBLE
-  base-multiplier: 1
-  linear-step: 1
-  # Batas keras level efek (semua efek). Level efek = min(pengali, max-level efek, angka ini).
-  max-effect-level: 64
+# =====================================================================
+#  XPR - BOOST PROGRESSION
+# =====================================================================
+xpr:
+  enabled: true
+  # Level maksimum per tier. Level TIDAK PERNAH melebihi angka ini.
+  max-level: 30
 
-# ---------- CARA ROULETTE MEMILIH EFEK ----------
-roll:
-  # Jumlah efek POSITIF = good-base-count + (tier / good-extra-every-tiers), maksimal good-max-count
-  good-base-count: 2
-  good-extra-every-tiers: 2
-  good-max-count: 5
-  # RISIKO: peluang dapat efek buruk = risk-base-chance + (risk-chance-per-tier * tier), maksimal risk-max-chance
-  risk-base-chance: 0.30
-  risk-chance-per-tier: 0.10
-  risk-max-chance: 1.0
-  # Tiap sekian tier, dapat +1 efek buruk tambahan (pasti). Maksimal risk-max-count efek buruk.
-  risk-extra-every-tiers: 3
-  risk-max-count: 3
+  roll:
+    # Biaya XP level per putaran roulette.
+    cost-levels: 3
+    # Jeda antar putaran per pemain (anti-spam).
+    cooldown: "5s"
+    # Suara saat mendapat hasil roll / naik tier.
+    sound: "entity.experience_orb.pickup"
 
-# ---------- TAMPILAN ----------
-display:
-  bossbar: true               # bar hitung mundur di atas layar
-  sounds: true
-  particles: true             # partikel saat roda berputar
-  effect-particles: true      # partikel efek potion di badan pemain
-  flavor-interval-seconds: 180  # pesan acak di action bar selama efek aktif (0 = mati)
-  warn-seconds: [60, 30, 10]  # peringatan sebelum efek habis / sebelum roda berputar
-  broadcast-min-multiplier: 8 # umumkan ke seluruh server jika pengali >= angka ini (0 = mati)
+  duration:
+    # duration = base + (level - 1) * per-level
+    base: "10m"
+    per-level: "1m"
 
-# ---------- DAFTAR EFEK ----------
-# Nama efek = ID vanilla Minecraft (huruf kecil).
-#   weight    : makin besar makin sering keluar
-#   max-level : batas level efek tsb (supaya tidak merusak game, mis. Resistance 8 = kebal total)
-# Tidak dimasukkan dengan sengaja:
-#   instant_health / instant_damage -> efek instan, tidak punya durasi
-#   levitation -> 15 menit melayang = pemain terbang ke langit tanpa bisa turun
-# Tambah / hapus / pindah efek sesuka hati. Set max-level 255 untuk menghilangkan batas.
-effects:
-  # ----- BERKAH (efek positif) -----
-  good:
-    speed: {weight: 10, max-level: 8}
-    haste: {weight: 10, max-level: 10}
-    strength: {weight: 8, max-level: 6}
-    jump_boost: {weight: 6, max-level: 6}
-    regeneration: {weight: 8, max-level: 5}
-    resistance: {weight: 6, max-level: 4}
-    fire_resistance: {weight: 6, max-level: 1}
-    water_breathing: {weight: 6, max-level: 1}
-    night_vision: {weight: 6, max-level: 1}
-    invisibility: {weight: 3, max-level: 1}
-    health_boost: {weight: 8, max-level: 10}
-    absorption: {weight: 8, max-level: 10}
-    saturation: {weight: 4, max-level: 3}
-    luck: {weight: 6, max-level: 10}
-    slow_falling: {weight: 4, max-level: 1}
-    dolphins_grace: {weight: 4, max-level: 3}
-    conduit_power: {weight: 4, max-level: 1}
-    hero_of_the_village: {weight: 2, max-level: 5}
-  # ----- RISIKO (efek negatif) -----
-  bad:
-    slowness: {weight: 10, max-level: 4}
-    mining_fatigue: {weight: 8, max-level: 4}
-    weakness: {weight: 10, max-level: 5}
-    poison: {weight: 10, max-level: 4}
-    wither: {weight: 2, max-level: 1}       # SANGAT mematikan selama 15 menit!
-    hunger: {weight: 8, max-level: 6}
-    nausea: {weight: 6, max-level: 1}
-    blindness: {weight: 4, max-level: 1}
-    darkness: {weight: 4, max-level: 1}
-    glowing: {weight: 5, max-level: 1}
-    unluck: {weight: 6, max-level: 5}
-    bad_omen: {weight: 3, max-level: 3}      # memicu raid saat masuk desa
-    weaving: {weight: 2, max-level: 1}       # jaring laba-laba saat mati
-    oozing: {weight: 2, max-level: 1}        # slime saat mati
-    infested: {weight: 2, max-level: 1}      # silverfish saat terkena damage
-    wind_charged: {weight: 2, max-level: 1}  # ledakan angin saat mati
+  cooldown:
+    # cooldown = base - floor((level - 1) / every-levels) * amount, dijepit ke minimum
+    base: "30m"
+    minimum: "5m"
+    reduction:
+      every-levels: 2
+      amount: "1m"
+
+  tiers:
+    # Jika true, Level 30 langsung membuka tier berikutnya otomatis.
+    # Jika false, pemain harus konfirmasi lewat GUI / /senzy xpr upgrade.
+    auto-advance: false
+    confirm-gui: true
+
+  side-effect:
+    # TIER = stage side-effect mengikuti nomor tier. PROGRESSION = mengikuti progres keseluruhan.
+    stage-source: "TIER"
+
+  active:
+    # Interval (tick) penyegaran efek boost yang sedang aktif.
+    refresh-interval: 20
+    end-on-death: true
+    effect-particles: false
+
+  gui:
+    click-to-activate: true
+
+  # ---------------------------------------------------------------
+  # Definisi boost. Tambah boost baru cukup salin salah satu blok di bawah.
+  # ---------------------------------------------------------------
+  # (dipindah ke bawah sebagai node top-level 'boosts' dan 'side-effects', lihat di bawah)
+
+side-effects:
+  nausea-mining:
+    type: "nausea"
+    pulse-duration: "4s"
+    stages:
+      1: { amplifier: 3, interval: "20s", duration: "4s" }
+      2: { amplifier: 3, interval: "30s", duration: "4s" }
+      3: { amplifier: 2, interval: "40s", duration: "4s" }
+      4: { amplifier: 2, interval: "50s", duration: "3s" }
+      5: { amplifier: 1, interval: "60s", duration: "3s" }
+  slowness-speed:
+    type: "slowness"
+    pulse-duration: "3s"
+    stages:
+      1: { amplifier: 2, interval: "25s", duration: "3s" }
+      2: { amplifier: 2, interval: "35s", duration: "3s" }
+      3: { amplifier: 1, interval: "45s", duration: "3s" }
+      4: { amplifier: 1, interval: "55s", duration: "2s" }
+      5: { amplifier: 1, interval: "70s", duration: "2s" }
+  weakness-strength:
+    type: "weakness"
+    pulse-duration: "3s"
+    stages:
+      1: { amplifier: 2, interval: "20s", duration: "3s" }
+      2: { amplifier: 2, interval: "30s", duration: "3s" }
+      3: { amplifier: 1, interval: "40s", duration: "3s" }
+      4: { amplifier: 1, interval: "50s", duration: "2s" }
+      5: { amplifier: 1, interval: "65s", duration: "2s" }
+
+boosts:
+  mining:
+    display-name: "<gold>Mining"
+    icon: "DIAMOND_PICKAXE"
+    effect: "haste"
+    weight: 30
+    side-effect: "nausea-mining"
+    tiers:
+      1: { base-duration: "10m", effect-amplifier: 0 }
+      2: { base-duration: "20m", effect-amplifier: 1 }
+      3: { base-duration: "30m", effect-amplifier: 2 }
+  speed:
+    display-name: "<aqua>Speed"
+    icon: "SUGAR"
+    effect: "speed"
+    weight: 30
+    side-effect: "slowness-speed"
+    tiers:
+      1: { base-duration: "10m", effect-amplifier: 0 }
+      2: { base-duration: "20m", effect-amplifier: 1 }
+      3: { base-duration: "30m", effect-amplifier: 2 }
+  strength:
+    display-name: "<red>Strength"
+    icon: "IRON_SWORD"
+    effect: "strength"
+    weight: 20
+    side-effect: "weakness-strength"
+    tiers:
+      1: { base-duration: "8m", effect-amplifier: 0 }
+      2: { base-duration: "16m", effect-amplifier: 1 }
+      3: { base-duration: "24m", effect-amplifier: 2 }
+  vitality:
+    display-name: "<light_purple>Vitality"
+    icon: "GOLDEN_APPLE"
+    effect: "regeneration"
+    weight: 20
+    tiers:
+      1: { base-duration: "6m", effect-amplifier: 0 }
+      2: { base-duration: "12m", effect-amplifier: 1 }
+
+# =====================================================================
+#  LOOTBOX - EVENT SYSTEM
+# =====================================================================
+lootbox:
+  enabled: true
+  # Jumlah LootBox per session.
+  amount: 5
+  session-duration: "1h"
+  # Session berakhir otomatis begitu semua LootBox terbuka (selain karena waktu habis).
+  end-when-all-opened: true
+  # Tampilkan koordinat pasti di broadcast/locate. Default false (hanya jarak & arah).
+  reveal-coordinates: false
+
+  auto-start:
+    enabled: false
+    interval: "3h"
+    min-players: 1
+
+  # Bobot rarity (harus berjumlah 100; jika tidak, tetap dipakai sebagai bobot relatif).
+  rarity:
+    common: 50
+    rare: 24
+    epic: 25
+    legendary: 1
+
+  announcements:
+    common: false
+    rare: false
+    epic: true
+    legendary: true
+
+  # Blok yang mewakili LootBox di dunia, per rarity.
+  appearance:
+    common: "BARREL"
+    rare: "CHEST"
+    epic: "ENDER_CHEST"
+    legendary: "SHULKER_BOX"
+
+  # --------------------------------------------------------------- area spawn
+  spawn-area:
+    # POINT = sebar di sekitar satu titik (lihat 'adjust'); RADIUS = lingkaran dari center; REGION = kotak min/max.
+    mode: "RADIUS"
+    world: "world"
+    center: { x: 0, y: 64, z: 0 }
+    radius: 500
+    region: { min-x: -500, max-x: 500, min-z: -500, max-z: 500 }
+
+  # Hanya dipakai pada mode POINT. 'radius' = sebaran lokal di sekitar anchor (BUKAN offset Y).
+  # 'y-range' = toleransi ketinggian tanah dibanding Y anchor (terpisah dari radius).
+  adjust:
+    radius: 10
+    y-offset: 0
+    y-range: 16
+
+  spawn:
+    # Percobaan acak maksimum per LootBox sebelum pindah ke tahap fallback berikutnya.
+    max-attempts: 50
+    # Ronde tambahan pencarian jika LootBox yang ditemukan masih kurang dari 'amount'.
+    extra-rounds: 1
+    # Minimal LootBox yang harus valid agar session tetap dimulai.
+    minimum-successful-spawns: 3
+    allowed-environments: ["NORMAL"]
+    min-y: 40
+    max-y: 300
+    void-margin: 8
+    border-margin: 16
+    # Batas jumlah chunk yang boleh dimuat selama satu pencarian (mencegah beban server).
+    max-chunk-loads: 150
+    generate-chunks: true
+    headroom: 2
+    minimum-distance-between: 75
+    point-minimum-distance: 4
+    unsafe-blocks: ["MAGMA_BLOCK", "CACTUS", "FIRE", "SOUL_FIRE", "TNT"]
+    forbidden-zones: []
+    # Contoh forbidden-zones:
+    # - { world: "world", min-x: -50, max-x: 50, min-z: -50, max-z: 50 }
+
+  fallback:
+    enabled: true
+    nearest-radius: 200
+    nearest-step: 16
+    nearest-attempts: 30
+    alternative-attempts: 25
+    # Jarak minimum antar-box dilonggarkan sebesar faktor ini HANYA di tahap alternatif
+    # (aturan kritis - dunia/border/forbidden-zone/liquid/void/tabrakan - tidak pernah dilonggarkan).
+    relax-distance-factor: 0.5
+
+  beacon:
+    enabled: true
+    base-material: "IRON_BLOCK"
+    require-beam: false
+    colors:
+      common: "WHITE"
+      rare: "BLUE"
+      epic: "PURPLE"
+      legendary: "YELLOW"
+    beam:
+      enabled: true
+    height-clearance:
+      check: true
+    particles:
+      enabled: true
+      interval: 10
+      view-distance: 64
+      ring-points: 10
+      type: "END_ROD"
+
+  hologram:
+    enabled: true
+    height: 1.4
+
+  loot-rolls:
+    common: { min: 1, max: 2 }
+    rare: { min: 2, max: 3 }
+    epic: { min: 2, max: 4 }
+    legendary: { min: 3, max: 5 }
+
+  bossbar:
+    enabled: true
+    color: "YELLOW"
+    overlay: "PROGRESS"
+
+  effects:
+    start:
+      sound: "entity.ender_dragon.growl"
+      volume: 1.0
+      pitch: 1.0
+    open:
+      sound: "entity.player.levelup"
+      volume: 1.0
+      pitch: 1.2
+      particle: "totem_of_undying"
+      count: 25
+    legendary:
+      sound: "ui.toast.challenge_complete"
+      volume: 1.0
+      pitch: 1.0
+      particle: "totem_of_undying"
+      count: 40
+
+# =====================================================================
+#  LOOT TABLE - per rarity, weighted
+# =====================================================================
+loot:
+  common:
+    - { item: "IRON_INGOT", min: 2, max: 5, weight: 40 }
+    - { item: "GOLD_INGOT", min: 1, max: 3, weight: 25 }
+    - { item: "BREAD", min: 4, max: 8, weight: 20 }
+    - { item: "ARROW", min: 8, max: 16, weight: 15 }
+  rare:
+    - { item: "GOLD_INGOT", min: 3, max: 6, weight: 30 }
+    - { item: "DIAMOND", min: 1, max: 2, weight: 25 }
+    - { item: "EXPERIENCE_BOTTLE", min: 4, max: 8, weight: 25 }
+    - { item: "ENDER_PEARL", min: 1, max: 3, weight: 20 }
+  epic:
+    - { item: "DIAMOND", min: 2, max: 4, weight: 35 }
+    - { item: "EMERALD", min: 3, max: 6, weight: 25 }
+    - { item: "ENCHANTED_GOLDEN_APPLE", min: 1, max: 1, weight: 10 }
+    - { item: "NETHERITE_SCRAP", min: 1, max: 2, weight: 30 }
+  legendary:
+    - { item: "NETHERITE_INGOT", min: 1, max: 2, weight: 40 }
+    - { item: "TOTEM_OF_UNDYING", min: 1, max: 1, weight: 30 }
+    - { item: "ENCHANTED_GOLDEN_APPLE", min: 1, max: 2, weight: 30 }
