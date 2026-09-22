@@ -65,7 +65,7 @@ public final class RewardGenerator {
     // legendary template
     private boolean templateEnabled = true;
     private int templateDenominator = 1000;
-    private Material templateMaterial = Material.SMITHING_TEMPLATE;
+    private Material templateMaterial = Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE;
 
     private boolean allowIncompatible = true;
 
@@ -125,7 +125,7 @@ public final class RewardGenerator {
         }
         templateDenominator = denom;
         Material tm = Material.matchMaterial(c.getString("legendary.template.material", "SMITHING_TEMPLATE"));
-        templateMaterial = (tm != null && tm.isItem()) ? tm : Material.SMITHING_TEMPLATE;
+        templateMaterial = (tm != null && tm.isItem()) ? tm : Material.NETHERITE_UPGRADE_SMITHING_TEMPLATE;
 
         allowIncompatible = c.getBoolean("enchantment.allow-incompatible", true);
     }
