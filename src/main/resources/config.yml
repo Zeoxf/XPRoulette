@@ -153,8 +153,8 @@ lootbox:
     enabled: true
     # Event LootBox muncul sendiri secara acak - jeda antar event dipilih ulang tiap kali
     # di antara min-interval..max-interval (BUKAN interval tetap).
-    min-interval: "30m"
-    max-interval: "3h"
+    min-interval: "15m"
+    max-interval: "2h"
     min-players: 1
 
   # Bobot rarity (RNG #3, harus berjumlah 100; jika tidak, tetap dipakai sebagai bobot relatif).

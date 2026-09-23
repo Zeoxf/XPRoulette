@@ -6,6 +6,7 @@ import id.senzy.lootbox.LootBox;
 import id.senzy.lootbox.LootBoxGui;
 import id.senzy.lootbox.LootBoxLocationManager;
 import id.senzy.lootbox.LootBoxManager;
+import id.senzy.lootbox.LootBoxRarity;
 import id.senzy.util.LocationUtil;
 import id.senzy.util.TimeUtil;
 import org.bukkit.command.CommandSender;
@@ -36,7 +37,7 @@ final class LootBoxCommand {
         String sub = args[0].toLowerCase();
         switch (sub) {
             case "status" -> status(sender);
-            case "locate" -> locate(sender);
+            case "locate" -> locate(sender, args);
             case "gui" -> openGui(sender);
             case "start" -> admin(sender, () -> plugin.lootbox().start(sender));
             case "stop" -> admin(sender, () -> plugin.lootbox().stop(sender));
@@ -71,7 +72,14 @@ final class LootBoxCommand {
                 "time", TimeUtil.format(lb.remainingMillis()));
     }
 
-    private void locate(CommandSender sender) {
+    /**
+     * /senzy lootbox locate [common|rare|epic|legendary|all]
+     * Tanpa argumen: LootBox terdekat (semua rarity). Dengan rarity: terdekat dari rarity itu saja.
+     * "all": daftar semua LootBox aktif, terurut dari yang terdekat. Koordinat pasti SELALU
+     * ditampilkan di sini (perintah personal, beda dengan broadcast otomatis yang tunduk pada
+     * lootbox.reveal-coordinates).
+     */
+    private void locate(CommandSender sender, String[] args) {
         Player p = requirePlayer(sender);
         if (p == null) return;
         MessageManager msg = plugin.messages();
@@ -80,28 +88,71 @@ final class LootBoxCommand {
             msg.send(p, "lootbox.locate.inactive");
             return;
         }
-        LootBox box = lb.nearest(p.getLocation());
+
+        String arg = args.length > 1 ? args[1].toLowerCase() : null;
+        if ("all".equals(arg)) {
+            locateAll(p, null);
+            return;
+        }
+        LootBoxRarity rarity = null;
+        if (arg != null) {
+            rarity = parseRarity(arg);
+            if (rarity == null) {
+                msg.send(p, "generic.usage", "usage", "/senzy lootbox locate [common|rare|epic|legendary|all]");
+                return;
+            }
+        }
+
+        LootBox box = lb.nearest(p.getLocation(), rarity);
         if (box == null) {
+            msg.send(p, rarity == null ? "lootbox.locate.none" : "lootbox.locate.none-rarity",
+                    "rarity", rarity == null ? "" : msg.raw("rarity." + rarity.id()));
+            return;
+        }
+        sendOne(p, box);
+    }
+
+    private void locateAll(Player p, LootBoxRarity rarity) {
+        MessageManager msg = plugin.messages();
+        List<LootBox> boxes = plugin.lootbox().sortedByDistance(p.getLocation(), rarity);
+        if (boxes.isEmpty()) {
             msg.send(p, "lootbox.locate.none");
             return;
         }
+        msg.send(p, "lootbox.locate.list-header", "count", boxes.size());
+        for (LootBox box : boxes) sendOne(p, box);
+    }
+
+    private void sendOne(Player p, LootBox box) {
+        MessageManager msg = plugin.messages();
         double dx = box.x() + 0.5 - p.getLocation().getX();
         double dz = box.z() + 0.5 - p.getLocation().getZ();
         double dist = LocationUtil.distance2D(p.getLocation().getX(), p.getLocation().getZ(), box.x() + 0.5, box.z() + 0.5);
         String direction = msg.raw("direction." + LocationUtil.DIRECTION_KEYS[LocationUtil.compassIndex(dx, dz)]);
         String rarity = msg.raw("rarity." + box.rarity().id());
-        if (lb.revealCoordinates()) {
-            msg.send(p, "lootbox.locate.found-coords", "rarity", rarity, "distance", Math.round(dist),
-                    "direction", direction, "x", box.x(), "y", box.y(), "z", box.z());
-        } else {
-            msg.send(p, "lootbox.locate.found", "rarity", rarity, "distance", Math.round(dist), "direction", direction);
+        // Koordinat pasti selalu ditampilkan di /locate (perintah aktif per-pemain), terlepas dari
+        // lootbox.reveal-coordinates yang hanya mengatur broadcast otomatis saat event dimulai.
+        msg.send(p, "lootbox.locate.found", "rarity", rarity, "distance", Math.round(dist),
+                "direction", direction, "x", box.x(), "y", box.y(), "z", box.z());
+    }
+
+    private LootBoxRarity parseRarity(String arg) {
+        try {
+            return LootBoxRarity.valueOf(arg.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return null;
         }
     }
 
     private void openGui(CommandSender sender) {
         Player p = requirePlayer(sender);
         if (p == null) return;
-        plugin.gui().open(p, new LootBoxGui(plugin, p));
+        try {
+            plugin.gui().open(p, new LootBoxGui(plugin, p));
+        } catch (RuntimeException e) {
+            plugin.getLogger().warning("Gagal membuka GUI LootBox untuk " + p.getName() + ": " + e);
+            plugin.messages().send(p, "generic.gui-error");
+        }
     }
 
     private void locations(CommandSender sender, String[] args) {
@@ -117,7 +168,12 @@ final class LootBoxCommand {
             return;
         }
         if (sender instanceof Player p) {
-            plugin.gui().open(p, new id.senzy.lootbox.LootBoxLocationsGui(plugin, p));
+            try {
+                plugin.gui().open(p, new id.senzy.lootbox.LootBoxLocationsGui(plugin, p));
+            } catch (RuntimeException e) {
+                plugin.getLogger().warning("Gagal membuka GUI Locations untuk " + p.getName() + ": " + e);
+                msg.send(p, "generic.gui-error");
+            }
             return;
         }
         var area = lb.locations().area();
@@ -177,6 +233,9 @@ final class LootBoxCommand {
             subs.addAll(List.of("start", "stop", "reset", "reload", "locations", "adjust"));
         }
         if (args.length == 1) return SenzyCommand.filter(subs, args[0]);
+        if (args.length == 2 && args[0].equalsIgnoreCase("locate")) {
+            return SenzyCommand.filter(List.of("common", "rare", "epic", "legendary", "all"), args[1]);
+        }
         if (args.length == 2 && args[0].equalsIgnoreCase("locations")) return SenzyCommand.filter(List.of("set"), args[1]);
         if (args.length == 2 && args[0].equalsIgnoreCase("adjust")) return SenzyCommand.filter(List.of("point", "radius"), args[1]);
         return List.of();

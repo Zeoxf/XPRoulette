@@ -28,6 +28,7 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -297,9 +298,15 @@ public final class LootBoxManager implements SenzyModule {
 
     /** LootBox aktif terdekat dari sebuah lokasi (dunia yang sama), atau null. */
     public LootBox nearest(Location from) {
+        return nearest(from, null);
+    }
+
+    /** LootBox aktif terdekat dari sebuah lokasi, opsional difilter ke satu rarity. Null jika tidak ada. */
+    public LootBox nearest(Location from, LootBoxRarity rarity) {
         LootBox best = null;
         double bestDist = Double.MAX_VALUE;
         for (LootBox b : activeBoxes()) {
+            if (rarity != null && b.rarity() != rarity) continue;
             if (from.getWorld() == null || !b.worldName().equals(from.getWorld().getName())) continue;
             double dx = b.x() + 0.5 - from.getX();
             double dy = b.y() - from.getY();
@@ -311,6 +318,23 @@ public final class LootBoxManager implements SenzyModule {
             }
         }
         return best;
+    }
+
+    /** Semua LootBox aktif (dunia yang sama), opsional difilter rarity, diurutkan dari yang terdekat. */
+    public List<LootBox> sortedByDistance(Location from, LootBoxRarity rarity) {
+        List<LootBox> out = new ArrayList<>();
+        for (LootBox b : activeBoxes()) {
+            if (rarity != null && b.rarity() != rarity) continue;
+            if (from.getWorld() == null || !b.worldName().equals(from.getWorld().getName())) continue;
+            out.add(b);
+        }
+        out.sort(Comparator.comparingDouble(b -> {
+            double dx = b.x() + 0.5 - from.getX();
+            double dy = b.y() - from.getY();
+            double dz = b.z() + 0.5 - from.getZ();
+            return dx * dx + dy * dy + dz * dz;
+        }));
+        return out;
     }
 
     /** LootBox yang memiliki blok ini (struktur atau box itu sendiri), atau null. */

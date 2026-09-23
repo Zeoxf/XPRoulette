@@ -14,6 +14,7 @@ generic:
   player-not-found: "<prefix><red>Pemain '<player>' tidak ditemukan / sedang offline."
   invalid-number: "<prefix><red>'<value>' bukan angka yang valid."
   reloaded: "<prefix><green>Konfigurasi, pesan, dan semua modul Senzy berhasil dimuat ulang."
+  gui-error: "<prefix><red>Gagal membuka menu, coba lagi. Kalau terus terjadi, cek console server (kemungkinan konflik dengan plugin lain)."
 
 direction:
   north: "Utara"
@@ -49,7 +50,7 @@ help:
   lootbox:
     - "<prefix><yellow><bold>Perintah LootBox</bold>"
     - "<gray> <white>/senzy lootbox status <gray>- Status event saat ini"
-    - "<gray> <white>/senzy lootbox locate <gray>- Cari LootBox terdekat"
+    - "<gray> <white>/senzy lootbox locate [common|rare|epic|legendary|all] <gray>- Cari LootBox"
     - "<gray> <white>/senzy lootbox gui <gray>- Buka menu LootBox"
   shop-hint:
     - "<prefix><yellow><bold>Senzy Shop</bold>"
@@ -133,8 +134,9 @@ lootbox:
   locate:
     inactive: "<prefix><gray>Tidak ada event LootBox yang berjalan."
     none: "<prefix><gray>Tidak ada LootBox aktif yang tersisa."
-    found: "<prefix><rarity> <white>LootBox <gray>- <white><distance> blok <gray>ke arah <white><direction>"
-    found-coords: "<prefix><rarity> <white>LootBox <gray>- <white><distance> blok <gray>ke arah <white><direction> <gray>(<x>, <y>, <z>)"
+    none-rarity: "<prefix><gray>Tidak ada LootBox <rarity><gray> aktif yang tersisa."
+    list-header: "<prefix><yellow><bold><count> LootBox aktif</bold> <gray>(terdekat dulu):"
+    found: "<prefix><rarity> <white>LootBox <gray>- <white><distance> blok <gray>ke arah <white><direction> <gray>(<x>, <y>, <z>)"
 
   open:
     inactive: "<prefix><red>LootBox ini sudah tidak berlaku."

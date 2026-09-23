@@ -143,7 +143,12 @@ final class XPRCommand {
     private void openGui(CommandSender sender) {
         Player p = requirePlayer(sender);
         if (p == null) return;
-        plugin.gui().open(p, new id.senzy.xpr.XPRGui(plugin, p));
+        try {
+            plugin.gui().open(p, new id.senzy.xpr.XPRGui(plugin, p));
+        } catch (RuntimeException e) {
+            plugin.getLogger().warning("Gagal membuka GUI XPR untuk " + p.getName() + ": " + e);
+            plugin.messages().send(p, "generic.gui-error");
+        }
     }
 
     private void grant(CommandSender sender, String[] args) {

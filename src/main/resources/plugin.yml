@@ -6,6 +6,11 @@ load: POSTWORLD
 authors: [Senzy]
 description: Senzy XPR (Boost Progression) & LootBox Event System
 softdepend: [PlaceholderAPI, Geyser-Spigot, floodgate, ViaVersion]
+# WAJIB: kita harus load & daftar command /senzy SEBELUM SenzyShop, supaya CommandBridge milik
+# SenzyShop menemukan command kita (bukan sebaliknya). Tanpa ini, urutan load antar dua plugin
+# tidak terjamin (bisa jadi alfabetis) dan /senzy bisa "direbut" duluan oleh SenzyShop, membuat
+# semua subcommand kita (xpr, lootbox, dst) tidak terjangkau lewat /senzy.
+loadbefore: [SenzyShop]
 
 commands:
   senzy:
