@@ -51,6 +51,7 @@ public final class LootBoxManager implements SenzyModule {
     private final LootBoxSpawner spawner;
     private final LootTable loot;
     private final RewardGenerator rewards;
+    private final LootBoxLuckManager luck;
 
     private LootBoxData state = new LootBoxData();
     private final Map<BlockPos, LootBox> protectedBlocks = new HashMap<>();
@@ -87,6 +88,7 @@ public final class LootBoxManager implements SenzyModule {
         this.spawner = new LootBoxSpawner(plugin);
         this.loot = new LootTable(plugin);
         this.rewards = new RewardGenerator(plugin, loot);
+        this.luck = new LootBoxLuckManager(plugin);
     }
 
     @Override
@@ -167,6 +169,7 @@ public final class LootBoxManager implements SenzyModule {
         locations.load();
         loot.load();
         rewards.load();
+        luck.load();
         beacons.reload();
     }
 
@@ -410,12 +413,13 @@ public final class LootBoxManager implements SenzyModule {
             SpawnPoint ok = spawner.revalidate(world, area, p.x(), p.z(), accepted);
             if (ok == null) continue;
             accepted.add(ok);
-            LootBoxRarity rarity = rollRarity();
+            // Mystery box: rarity BELUM ditentukan di sini - baru di-roll per-pemain saat dibuka (lihat open()),
+            // supaya sistem luck bisa memengaruhi hasilnya. Placeholder di bawah tidak berarti apa-apa.
             LootBox box = new LootBox(eventId + "-b" + (++index), eventId, sessionId, world.getName(),
-                    ok.x() + 1, ok.y(), ok.z(), rarity, now, end, ok.beam());
+                    ok.x() + 1, ok.y(), ok.z(), LootBoxRarity.COMMON, now, end, ok.beam());
             beacons.build(box, world);
             built.add(box);
-            plugin.debug("LootBox selected rarity: box=" + box.id() + " rarity=" + rarity);
+            plugin.debug("LootBox spawned (mystery): box=" + box.id());
         }
 
         if (built.size() < minimumSpawns) {
@@ -438,8 +442,7 @@ public final class LootBoxManager implements SenzyModule {
         msg.broadcast("lootbox.broadcast.start", "count", built.size(), "duration", TimeUtil.format(sessionMillis));
         if (revealCoordinates) {
             for (LootBox b : built) {
-                msg.broadcast("lootbox.broadcast.coords", "rarity", msg.raw("rarity." + b.rarity().id()),
-                        "world", b.worldName(), "x", b.x(), "y", b.y(), "z", b.z());
+                msg.broadcast("lootbox.broadcast.coords", "world", b.worldName(), "x", b.x(), "y", b.y(), "z", b.z());
             }
         } else {
             msg.broadcast("lootbox.broadcast.hint");
@@ -513,25 +516,43 @@ public final class LootBoxManager implements SenzyModule {
 
         // Tandai dulu, baru beri hadiah: tidak ada celah double-open.
         box.markOpened(p.getUniqueId(), p.getName());
-        List<ItemStack> rewards = this.rewards.generate(box.rarity());
+
+        // Mystery box: rarity SEBENARNYA baru diputuskan di sini, dipengaruhi luck pemain ini
+        // (makin lama tidak dapat hadiah utama, makin condong ke rarity tinggi).
+        LootBoxRarity rolled = luck.rollRarity(p.getUniqueId(), weights);
+        box.reveal(rolled);
+        double templateChance = rolled == LootBoxRarity.LEGENDARY
+                ? luck.templateChance(p.getUniqueId(), rewards.baseTemplateChance())
+                : -1;
+        List<ItemStack> rewardItems = rewards.generate(rolled, templateChance);
+
         Location at = new Location(p.getWorld(), box.x() + 0.5, box.y() + 0.5, box.z() + 0.5);
-        Map<Integer, ItemStack> overflow = p.getInventory().addItem(rewards.toArray(new ItemStack[0]));
+        Map<Integer, ItemStack> overflow = p.getInventory().addItem(rewardItems.toArray(new ItemStack[0]));
         for (ItemStack left : overflow.values()) p.getWorld().dropItemNaturally(p.getLocation(), left);
 
-        playEffectsAt(box.rarity() == LootBoxRarity.LEGENDARY ? "legendary" : "open", at);
+        playEffectsAt(rolled == LootBoxRarity.LEGENDARY ? "legendary" : "open", at);
+        revealBurst(at, rolled);
         cleanupBox(box); // box + beacon hilang, terrain kembali seperti semula
+        luck.recordOpen(p.getUniqueId(), rolled); // reset streak kalau ini hadiah utama, +1 kalau bukan
         state.save(plugin.data());
 
-        String rarityName = msg.raw("rarity." + box.rarity().id());
+        String rarityName = msg.raw("rarity." + rolled.id());
         msg.send(p, "lootbox.open.success", "rarity", rarityName);
-        msg.send(p, "lootbox.open.rewards", "items", describe(rewards));
-        if (announce.getOrDefault(box.rarity(), false)) {
-            msg.broadcast("lootbox.announce." + box.rarity().id(), "player", p.getName(), "rarity", rarityName);
+        msg.send(p, "lootbox.open.rewards", "items", describe(rewardItems));
+        if (announce.getOrDefault(rolled, false)) {
+            msg.broadcast("lootbox.announce." + rolled.id(), "player", p.getName(), "rarity", rarityName);
         }
-        plugin.debug("LootBox opened: box=" + box.id() + " rarity=" + box.rarity() + " by=" + p.getName()
-                + " items=" + rewards.size());
+        plugin.debug("LootBox opened: box=" + box.id() + " rarity=" + rolled + " by=" + p.getName()
+                + " items=" + rewardItems.size() + " luck=" + String.format(Locale.ROOT, "%.2f", luck.luckFactor(p.getUniqueId())));
 
         if (endWhenAllOpened && unopenedCount() == 0) finishSession(EndReason.ALL_OPENED, true);
+    }
+
+    /** Semburan partikel singkat sesuai warna rarity yang baru terungkap - efek "reveal". */
+    private void revealBurst(Location at, LootBoxRarity rarity) {
+        if (at.getWorld() == null) return;
+        var dust = new org.bukkit.Particle.DustOptions(beacons.colorOf(rarity), 1.6f);
+        at.getWorld().spawnParticle(org.bukkit.Particle.DUST, at, 30, 0.4, 0.4, 0.4, 0, dust);
     }
 
     private String describe(List<ItemStack> items) {

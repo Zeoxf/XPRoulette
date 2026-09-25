@@ -20,7 +20,9 @@ public final class LootBox {
     private final int x;
     private final int y;
     private final int z;
-    private final LootBoxRarity rarity;
+    /** Rarity SEBENARNYA baru diketahui saat dibuka (mystery box) - lihat {@link #reveal}. */
+    private LootBoxRarity rarity;
+    private boolean revealed;
     private final long spawnTime;
     private final long endTime;
     private final boolean beamActive;
@@ -30,6 +32,7 @@ public final class LootBox {
     private String openedByName;
     private final List<OriginalBlock> originals = new ArrayList<>();
 
+    /** @param rarity placeholder saat spawn (belum berarti apa-apa sampai {@link #reveal} dipanggil) */
     public LootBox(String id, String eventId, String sessionId, String worldName, int x, int y, int z,
                    LootBoxRarity rarity, long spawnTime, long endTime, boolean beamActive) {
         this.id = id;
@@ -80,6 +83,22 @@ public final class LootBox {
 
     public LootBoxRarity rarity() {
         return rarity;
+    }
+
+    /** Sudah dibuka & rarity sebenarnya diketahui (bukan lagi mystery). */
+    public boolean revealed() {
+        return revealed;
+    }
+
+    /** Mengungkap rarity sebenarnya untuk pemain yang membuka - dipanggil sekali, tepat sebelum reward dibuat. */
+    public void reveal(LootBoxRarity actual) {
+        this.rarity = actual;
+        this.revealed = true;
+    }
+
+    void restoreReveal(LootBoxRarity actual, boolean revealed) {
+        this.rarity = actual;
+        this.revealed = revealed;
     }
 
     public long spawnTime() {

@@ -157,12 +157,33 @@ lootbox:
     max-interval: "2h"
     min-players: 1
 
-  # Bobot rarity (RNG #3, harus berjumlah 100; jika tidak, tetap dipakai sebagai bobot relatif).
+  # Bobot rarity dasar (RNG #3, dipakai sebelum luck menyesuaikan - lihat 'luck' di bawah).
+  # Harus berjumlah 100; jika tidak, tetap dipakai sebagai bobot relatif.
   rarity:
     common: 50.0
     rare: 24.0
     epic: 25.0
     legendary: 1.0
+
+  # ------------------------------------------------------------- mystery luck (pity system)
+  # Makin banyak LootBox dibuka BERTURUT-TURUT tanpa mendapat hadiah utama (reset-on), makin
+  # besar peluang rarity tinggi - termasuk peluang Legendary Template. Tetap RNG (tidak pernah
+  # 100%), dan streak-nya RESET begitu hadiah utama didapat, supaya tidak keterusan OP.
+  luck:
+    enabled: true
+    # Rarity yang dianggap "hadiah utama" - begitu dapat ini, streak kembali ke 0.
+    reset-on: "legendary"
+    # Jumlah bukaan tanpa hadiah utama sampai luck mencapai plafon maksimum (bukan guarantee).
+    max-streak: 40
+    # Perkalian bobot tambahan per rarity saat luck di plafon (0 = tidak pernah dinaikkan).
+    boost-multiplier:
+      rare: 1.0
+      epic: 3.0
+      legendary: 8.0
+    # Seberapa besar bobot COMMON diturunkan saat luck di plafon (0-1).
+    common-reduction-factor: 0.6
+    # Plafon peluang Legendary Template saat luck penuh (tetap RNG, tidak pernah pasti).
+    max-template-chance: 0.05
 
   announcements:
     common: false
@@ -170,12 +191,11 @@ lootbox:
     epic: true
     legendary: true
 
-  # Blok yang mewakili LootBox di dunia, per rarity.
-  appearance:
-    common: "BARREL"
-    rare: "CHEST"
-    epic: "ENDER_CHEST"
-    legendary: "SHULKER_BOX"
+  # Tampilan LootBox SEBELUM dibuka - sama untuk semua rarity (mystery box, tidak membocorkan isi).
+  # Rarity sebenarnya baru terlihat lewat pesan & partikel saat LootBox dibuka.
+  mystery:
+    material: "ENDER_CHEST"
+    beacon-color: "LIGHT_GRAY"
 
   # --------------------------------------------------------------- area spawn
   spawn-area:

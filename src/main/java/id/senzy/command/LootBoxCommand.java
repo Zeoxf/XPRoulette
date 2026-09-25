@@ -73,11 +73,12 @@ final class LootBoxCommand {
     }
 
     /**
-     * /senzy lootbox locate [common|rare|epic|legendary|all]
-     * Tanpa argumen: LootBox terdekat (semua rarity). Dengan rarity: terdekat dari rarity itu saja.
-     * "all": daftar semua LootBox aktif, terurut dari yang terdekat. Koordinat pasti SELALU
-     * ditampilkan di sini (perintah personal, beda dengan broadcast otomatis yang tunduk pada
-     * lootbox.reveal-coordinates).
+     * /senzy lootbox locate [all]
+     * Tanpa argumen: LootBox terdekat. "all": daftar semua LootBox aktif, terurut dari yang
+     * terdekat. Sejak LootBox jadi "mystery box" (rarity baru diketahui saat dibuka - lihat sistem
+     * luck), locate TIDAK BISA lagi memfilter per rarity karena isinya memang belum ditentukan
+     * sebelum dibuka. Koordinat pasti SELALU ditampilkan di sini (perintah personal, beda dengan
+     * broadcast otomatis yang tunduk pada lootbox.reveal-coordinates).
      */
     private void locate(CommandSender sender, String[] args) {
         Player p = requirePlayer(sender);
@@ -91,30 +92,29 @@ final class LootBoxCommand {
 
         String arg = args.length > 1 ? args[1].toLowerCase() : null;
         if ("all".equals(arg)) {
-            locateAll(p, null);
+            locateAll(p);
             return;
         }
-        LootBoxRarity rarity = null;
+        if (arg != null && parseRarity(arg) != null) {
+            msg.send(p, "lootbox.locate.mystery-notice");
+            return;
+        }
         if (arg != null) {
-            rarity = parseRarity(arg);
-            if (rarity == null) {
-                msg.send(p, "generic.usage", "usage", "/senzy lootbox locate [common|rare|epic|legendary|all]");
-                return;
-            }
+            msg.send(p, "generic.usage", "usage", "/senzy lootbox locate [all]");
+            return;
         }
 
-        LootBox box = lb.nearest(p.getLocation(), rarity);
+        LootBox box = lb.nearest(p.getLocation());
         if (box == null) {
-            msg.send(p, rarity == null ? "lootbox.locate.none" : "lootbox.locate.none-rarity",
-                    "rarity", rarity == null ? "" : msg.raw("rarity." + rarity.id()));
+            msg.send(p, "lootbox.locate.none");
             return;
         }
         sendOne(p, box);
     }
 
-    private void locateAll(Player p, LootBoxRarity rarity) {
+    private void locateAll(Player p) {
         MessageManager msg = plugin.messages();
-        List<LootBox> boxes = plugin.lootbox().sortedByDistance(p.getLocation(), rarity);
+        List<LootBox> boxes = plugin.lootbox().sortedByDistance(p.getLocation(), null);
         if (boxes.isEmpty()) {
             msg.send(p, "lootbox.locate.none");
             return;
@@ -125,15 +125,12 @@ final class LootBoxCommand {
 
     private void sendOne(Player p, LootBox box) {
         MessageManager msg = plugin.messages();
-        double dx = box.x() + 0.5 - p.getLocation().getX();
-        double dz = box.z() + 0.5 - p.getLocation().getZ();
         double dist = LocationUtil.distance2D(p.getLocation().getX(), p.getLocation().getZ(), box.x() + 0.5, box.z() + 0.5);
-        String direction = msg.raw("direction." + LocationUtil.DIRECTION_KEYS[LocationUtil.compassIndex(dx, dz)]);
-        String rarity = msg.raw("rarity." + box.rarity().id());
-        // Koordinat pasti selalu ditampilkan di /locate (perintah aktif per-pemain), terlepas dari
-        // lootbox.reveal-coordinates yang hanya mengatur broadcast otomatis saat event dimulai.
-        msg.send(p, "lootbox.locate.found", "rarity", rarity, "distance", Math.round(dist),
-                "direction", direction, "x", box.x(), "y", box.y(), "z", box.z());
+        // Lokasi ditampilkan sebagai koordinat X/Z pasti (bukan arah mata angin). Koordinat SELALU
+        // ditampilkan di /locate (perintah aktif per-pemain), terlepas dari lootbox.reveal-coordinates
+        // yang hanya mengatur broadcast otomatis saat event dimulai. Rarity TIDAK ditampilkan - box
+        // masih misteri sampai benar-benar dibuka.
+        msg.send(p, "lootbox.locate.found", "distance", Math.round(dist), "x", box.x(), "y", box.y(), "z", box.z());
     }
 
     private LootBoxRarity parseRarity(String arg) {
@@ -234,7 +231,7 @@ final class LootBoxCommand {
         }
         if (args.length == 1) return SenzyCommand.filter(subs, args[0]);
         if (args.length == 2 && args[0].equalsIgnoreCase("locate")) {
-            return SenzyCommand.filter(List.of("common", "rare", "epic", "legendary", "all"), args[1]);
+            return SenzyCommand.filter(List.of("all"), args[1]);
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("locations")) return SenzyCommand.filter(List.of("set"), args[1]);
         if (args.length == 2 && args[0].equalsIgnoreCase("adjust")) return SenzyCommand.filter(List.of("point", "radius"), args[1]);

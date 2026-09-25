@@ -46,7 +46,9 @@ public final class LootBoxBeaconManager {
 
     private Material baseMaterial = Material.IRON_BLOCK;
     private final Map<LootBoxRarity, DyeColor> colors = new EnumMap<>(LootBoxRarity.class);
-    private final Map<LootBoxRarity, Material> appearance = new EnumMap<>(LootBoxRarity.class);
+    /** Tampilan SEBELUM dibuka - sama untuk semua rarity (mystery box, tidak membocorkan isi). */
+    private Material mysteryMaterial = Material.ENDER_CHEST;
+    private DyeColor mysteryColor = DyeColor.LIGHT_GRAY;
     private boolean hologramEnabled = true;
     private double hologramHeight = 1.4;
     private boolean particlesEnabled = true;
@@ -65,7 +67,6 @@ public final class LootBoxBeaconManager {
         baseMaterial = (base != null && base.isBlock()) ? base : Material.IRON_BLOCK;
 
         String[] defaultColors = {"WHITE", "BLUE", "PURPLE", "YELLOW"};
-        Material[] defaultBlocks = {Material.BARREL, Material.CHEST, Material.ENDER_CHEST, Material.SHULKER_BOX};
         for (LootBoxRarity r : LootBoxRarity.values()) {
             DyeColor color;
             try {
@@ -75,8 +76,13 @@ public final class LootBoxBeaconManager {
                 color = DyeColor.WHITE;
             }
             colors.put(r, color);
-            Material m = Material.matchMaterial(c.getString("lootbox.appearance." + r.id(), defaultBlocks[r.ordinal()].name()));
-            appearance.put(r, (m != null && m.isBlock() && !m.isAir()) ? m : defaultBlocks[r.ordinal()]);
+        }
+        Material mm = Material.matchMaterial(c.getString("lootbox.mystery.material", "ENDER_CHEST"));
+        mysteryMaterial = (mm != null && mm.isBlock() && !mm.isAir()) ? mm : Material.ENDER_CHEST;
+        try {
+            mysteryColor = DyeColor.valueOf(c.getString("lootbox.mystery.beacon-color", "LIGHT_GRAY").toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            mysteryColor = DyeColor.LIGHT_GRAY;
         }
 
         hologramEnabled = c.getBoolean("lootbox.hologram.enabled", true);
@@ -104,14 +110,14 @@ public final class LootBoxBeaconManager {
                 }
             }
             list.add(new Placement(bx, y, z, Material.BEACON));
-            list.add(new Placement(bx, y + 1, z, glassFor(box.rarity())));
+            list.add(new Placement(bx, y + 1, z, mysteryGlass()));
         }
-        list.add(new Placement(box.x(), y, z, appearance.get(box.rarity())));
+        list.add(new Placement(box.x(), y, z, mysteryMaterial));
         return list;
     }
 
-    private Material glassFor(LootBoxRarity rarity) {
-        Material m = Material.matchMaterial(colors.get(rarity).name() + "_STAINED_GLASS");
+    private Material mysteryGlass() {
+        Material m = Material.matchMaterial(mysteryColor.name() + "_STAINED_GLASS");
         return m == null ? Material.GLASS : m;
     }
 
@@ -169,8 +175,8 @@ public final class LootBoxBeaconManager {
     private void spawnHologram(LootBox box, World world) {
         removeHologram(box.id());
         if (!hologramEnabled || !world.isChunkLoaded(box.x() >> 4, box.z() >> 4)) return;
-        List<Component> lines = plugin.messages().list("lootbox.hologram.lines",
-                "rarity", plugin.messages().raw("rarity." + box.rarity().id()));
+        // Rarity TIDAK ditampilkan di sini - box masih misteri sampai benar-benar dibuka.
+        List<Component> lines = plugin.messages().list("lootbox.hologram.lines");
         List<ArmorStand> stands = new ArrayList<>();
         for (int i = 0; i < lines.size(); i++) {
             final Component line = lines.get(i);
@@ -242,7 +248,7 @@ public final class LootBoxBeaconManager {
     }
 
     private void drawMarker(World w, LootBox box, Location center) {
-        Color color = colors.get(box.rarity()).getColor();
+        Color color = mysteryColor.getColor();
         Particle.DustOptions dust = new Particle.DustOptions(color, 1.4f);
         double phase = (System.currentTimeMillis() % 4000L) / 4000.0 * Math.PI * 2;
         for (int i = 0; i < ringPoints; i++) {

@@ -138,6 +138,15 @@ public final class RewardGenerator {
 
     /** Reward lengkap untuk satu LootBox: material/tool sesuai rarity + EXP Bottle wajib. */
     public List<ItemStack> generate(LootBoxRarity rarity) {
+        return generate(rarity, -1);
+    }
+
+    /**
+     * Sama seperti {@link #generate(LootBoxRarity)}, tapi peluang Legendary Template bisa dinaikkan
+     * dari luar (mis. oleh {@link LootBoxLuckManager}). {@code templateChanceOverride} negatif
+     * berarti pakai nilai config biasa (tidak ada luck).
+     */
+    public List<ItemStack> generate(LootBoxRarity rarity, double templateChanceOverride) {
         List<ItemStack> out = new ArrayList<>();
         switch (rarity) {
             case COMMON -> out.addAll(materials.roll(LootBoxRarity.COMMON));
@@ -158,9 +167,9 @@ public final class RewardGenerator {
                 ItemStack tool = rollEnchantedTool(Family.DIAMOND, legendaryMinEnchants, legendaryMaxEnchants, legendaryMaxLevel);
                 if (tool != null) out.add(tool);
                 else out.addAll(materials.roll(LootBoxRarity.LEGENDARY));
-                if (rollLegendaryTemplate()) {
+                if (rollLegendaryTemplate(templateChanceOverride)) {
                     out.add(new ItemStack(templateMaterial, 1));
-                    plugin.debug("LootBox legendary template berhasil (1/" + templateDenominator + ")");
+                    plugin.debug("LootBox legendary template berhasil");
                 }
             }
         }
@@ -168,10 +177,17 @@ public final class RewardGenerator {
         return out;
     }
 
-    /** True jika roll template berhasil. Tidak ada pity, tidak ada counter - murni RNG tiap kali. */
-    private boolean rollLegendaryTemplate() {
-        if (!templateEnabled || templateDenominator <= 0) return false;
-        return ThreadLocalRandom.current().nextInt(templateDenominator) == 0;
+    /** True jika roll template berhasil. Override >=0 dari luck menggantikan 1/denominator config. */
+    private boolean rollLegendaryTemplate(double chanceOverride) {
+        if (!templateEnabled) return false;
+        double chance = chanceOverride >= 0 ? chanceOverride : (templateDenominator > 0 ? 1.0 / templateDenominator : 0.0);
+        return ThreadLocalRandom.current().nextDouble() < chance;
+    }
+
+    /** Peluang dasar template murni dari config (1/denominator), dipakai sebagai basis luck scaling. */
+    public double baseTemplateChance() {
+        if (!templateEnabled || templateDenominator <= 0) return 0.0;
+        return 1.0 / templateDenominator;
     }
 
     private void appendExpBottle(List<ItemStack> out) {

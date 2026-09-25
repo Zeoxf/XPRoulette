@@ -125,7 +125,7 @@ lootbox:
   hologram:
     lines:
       - "<gold><bold>[ LOOTBOX ]</bold>"
-      - "<rarity>"
+      - "<gray>???"
 
   status:
     active-line: "<prefix><green>Event aktif <gray>- <opened>/<total> terbuka <gray>- sisa <white><time>"
@@ -134,9 +134,9 @@ lootbox:
   locate:
     inactive: "<prefix><gray>Tidak ada event LootBox yang berjalan."
     none: "<prefix><gray>Tidak ada LootBox aktif yang tersisa."
-    none-rarity: "<prefix><gray>Tidak ada LootBox <rarity><gray> aktif yang tersisa."
+    mystery-notice: "<prefix><yellow>LootBox sekarang misteri - isinya baru diketahui saat dibuka, jadi tidak bisa dicari per rarity. Pakai <white>/senzy lootbox locate<yellow> atau <white>/senzy lootbox locate all<yellow>."
     list-header: "<prefix><yellow><bold><count> LootBox aktif</bold> <gray>(terdekat dulu):"
-    found: "<prefix><rarity> <white>LootBox <gray>- <white><distance> blok <gray>ke arah <white><direction> <gray>(<x>, <y>, <z>)"
+    found: "<prefix><white>LootBox <gray>- <white><distance> blok <gray>- X: <white><x> <gray>Z: <white><z>"
 
   open:
     inactive: "<prefix><red>LootBox ini sudah tidak berlaku."
@@ -155,7 +155,7 @@ lootbox:
   broadcast:
     start: "<prefix><gold><bold>Event LootBox dimulai!</bold> <white><count> LootBox tersebar di peta <gray>- selama <white><duration>"
     hint: "<prefix><yellow>Gunakan <white>/senzy lootbox locate <yellow>untuk mencari LootBox terdekat!"
-    coords: "<prefix><rarity> <white>LootBox <gray>muncul di <white><world> (<x>, <y>, <z>)"
+    coords: "<prefix><white>LootBox <gray>muncul di <white><world> <gray>- X: <white><x> <gray>Z: <white><z>"
 
   ended:
     timeout: "<prefix><gray>Event LootBox berakhir <gray>- <white><opened>/<total> <gray>terbuka."
